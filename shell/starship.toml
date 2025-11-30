@@ -1,0 +1,17 @@
+# ~/.config/starship.toml
+
+format = '$shell$directory$character'
+# format = '$directory$character'
+add_newline = false
+right_format='$all'
+
+[gcloud]
+disabled = true
+
+[shell]
+disabled = false
+format = "[$indicator]($style)"
+style = "bold blue"
+bash_indicator = "\\[bash\\]($style) "
+zsh_indicator = "\\[zsh\\]($style) "
+fish_indicator = ""
