@@ -1,0 +1,14 @@
+# ~/.config/starship.toml
+
+format = '$shell$directory$character'
+add_newline = false
+
+
+[shell]
+disabled = false
+format = "[$indicator]($style)"
+style = "bold blue"
+bash_indicator = "\\[bash\\]($style) "
+# zsh_indicator = "\\[zsh\\]($style) "
+zsh_indicator = ""
+fish_indicator = "\\[fish\\]($style) "
