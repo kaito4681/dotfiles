@@ -1,0 +1,82 @@
+# ~/.config/sheldon/plugins.toml
+#
+# github: https://github.com/rossmacarthur/sheldon
+# docs: https://sheldon.cli.rs
+# 
+
+shell = "zsh"
+
+[templates]
+# defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+
+
+[plugins]
+
+# 1. 遅延読み込み（defer）
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+
+
+# 2. 補完データ（辞書）の追加
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+
+# 3. 補完システムの起動（重要：これはcompletionsの後，highlightingの前に必要）
+#    これがないと補完が動きません
+[plugins.compinit]
+inline = 'autoload -Uz compinit && zsh-defer "compinit; for c in \"\${__compdef_queue[@]}\"; do compdef \${=c}; done; unset __compdef_queue"'
+
+# 4. Fish風のメニュー選択（fzf-tab）
+#    これを入れるとTabで選択画面が出ます
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+apply = ["defer"]
+
+# 5. オートサジェスト（入力予測）
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+
+# 6. Abbr（展開エイリアス）
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+# 7. シンタックスハイライト（必ず最後に記述）
+[plugins.fast-syntax-highlighting]
+github = "zdharma-continuum/fast-syntax-highlighting"
+apply = ["defer"]
+
+# 8. 色設定（Fish風カラー）
+[plugins.fast-syntax-highlighting-config]
+inline = '''
+typeset -A FAST_HIGHLIGHT_STYLES
+FAST_HIGHLIGHT_STYLES[command]='fg=blue,bold'
+FAST_HIGHLIGHT_STYLES[alias]='fg=blue,bold'
+FAST_HIGHLIGHT_STYLES[function]='fg=blue,bold'
+FAST_HIGHLIGHT_STYLES[builtin]='fg=blue,bold'
+FAST_HIGHLIGHT_STYLES[precommand]='fg=blue,bold'
+FAST_HIGHLIGHT_STYLES[commandseparator]='none'
+FAST_HIGHLIGHT_STYLES[unknown-token]='fg=red,bold'
+FAST_HIGHLIGHT_STYLES[double-quoted-argument]='fg=yellow'
+FAST_HIGHLIGHT_STYLES[single-quoted-argument]='fg=yellow'
+FAST_HIGHLIGHT_STYLES[path]='underline'
+'''
+
+[plugins.benchmark]
+inline = '''
+function benchmark() {
+    hyperfine --warmup 3 --runs 10 'zsh -i -c exit'
+}
+'''	
+
+[plugins.zsh-app-launcher]
+github = "kaito4681/zsh-app-launcher"
+apply = ["defer"]
