@@ -1,0 +1,110 @@
+
+# compinit is handled by sheldon (deferred)
+# autoload -Uz compinit && compinit
+
+# Define compdef queue to handle calls before compinit is loaded
+typeset -a __compdef_queue
+function compdef() {
+    __compdef_queue+=("$*")
+}
+
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:messages' format '%F{yellow}%d%f'
+zstyle ':completion:*:warnings' format '%F{red}No matches for: %d%f'
+zstyle ':completion:*' group-name ''
+
+
+# ==================== Envs ====================
+{{- range .env }}
+{{- $vars := .vars }}
+
+# --- {{ .category }} ---
+{{- range (keys $vars) }}
+export {{ printf . }}="{{ index $vars . }}"
+{{- end }}
+{{- end }}
+
+
+# ==================== Paths ====================
+
+# --- all paths ---
+export PATH="{{ .paths | join ":" }}:$PATH"
+
+
+# ==================== Aliases ====================
+{{- range .aliases }}
+{{- $cmds := .cmds }}
+
+# --- {{ .category }} ---
+{{- range (keys $cmds) }}
+alias {{ . }}='{{ index $cmds . }}'
+{{- end }}
+{{- end }}
+
+
+{{- if eq .chezmoi.os "darwin" }}
+{{- range .aliases_darwin }}
+{{- $cmds := .cmds }}
+
+# --- {{ .category }}(macOS) ---
+{{- range (keys $cmds) }}
+alias {{ . }}='{{ index $cmds . }}'
+{{- end }}
+{{- end }}
+{{- end }}
+
+# ==================== Optimiations ====================
+
+# Cache directory
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+if [[ ! -d "$ZSH_CACHE_DIR" ]]; then
+    mkdir -p "$ZSH_CACHE_DIR"
+fi
+
+# Usage: _eval_cache <cache_name> <command> <dependency_file>
+function _eval_cache() {
+    local cache_name="$1"
+    local cmd="$2"
+    local dep="$3"
+    local cache_file="$ZSH_CACHE_DIR/$cache_name.zsh"
+
+    # Check if cache exists and is newer than dependency
+    if [[ ! -f "$cache_file" ]] || [[ -n "$dep" && "$dep" -nt "$cache_file" ]]; then
+        eval "$cmd" > "$cache_file"
+        zcompile "$cache_file"
+    fi
+
+    # Ensure .zwc exists and is up to date
+    if [[ ! -f "$cache_file.zwc" || "$cache_file" -nt "$cache_file.zwc" ]]; then
+        zcompile "$cache_file"
+    fi
+
+    source "$cache_file"
+}
+
+# brew
+{{- if eq .chezmoi.os "darwin" }}
+_eval_cache "brew" "/opt/homebrew/bin/brew shellenv" "/opt/homebrew/bin/brew"
+{{- else if eq .chezmoi.os "linux" }}
+_eval_cache "brew" "/home/linuxbrew/.linuxbrew/bin/brew shellenv" "/home/linuxbrew/.linuxbrew/bin/brew"
+{{- end }}
+
+# mise
+_eval_cache "mise" "mise activate zsh" "=mise"
+
+# rust
+source "$HOME/.cargo/env"
+
+# fzf
+_eval_cache "fzf" "fzf --zsh" "=fzf"
+
+# uv (python)
+_eval_cache "uv" "uv generate-shell-completion zsh" "=uv"
+
+# theme
+_eval_cache "starship" "starship init zsh" "=starship"
+
+# sheldon
+export SHELDON_CONFIG_DIR="$HOME/.config/sheldon"
+_eval_cache "sheldon" "sheldon source" "$SHELDON_CONFIG_DIR/plugins.toml"

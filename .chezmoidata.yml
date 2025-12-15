@@ -1,0 +1,72 @@
+paths:
+  - "$HOME/.local/bin"
+  - "$HOME/.local/share/mise/shims"
+  - "$AQUA_ROOT_DIR/bin"
+  - "$HOME/.bun/bin"
+  - "$HOME/.cargo/bin"
+  - "$HOME/.lmstudio/bin"
+  - "$HOME/.antigravity/antigravity/bin"
+  - "/Library/TeX/texbin"
+
+env:
+  - category: "Language"
+    vars:
+      LANG: "en_US.UTF-8"
+
+  - category: "XDG"
+    vars:
+      XDG_CONFIG_HOME: "${XDG_CONFIG_HOME:-$HOME/.config}"
+      XDG_DATA_HOME: "${XDG_DATA_HOME:-$HOME/.local/share}"
+      XDG_CACHE_HOME: "${XDG_CACHE_HOME:-$HOME/.cache}"
+
+  - category: "History"
+    vars:
+      HISTSIZE: "100000"
+      SAVEHIST: "100000"
+
+  - category: "Aqua"
+    vars:
+      AQUA_ROOT_DIR: "$XDG_DATA_HOME/aquaproj-aqua"
+      AQUA_GLOBAL_CONFIG: "$XDG_CONFIG_HOME/aquaproj-aqua/aqua.yaml"
+
+  - category: "Editor"
+    vars:
+      EDITOR: "nvim"
+      VISUAL: "nvim"
+
+
+aliases:
+  - category: "ls"
+    cmds:
+      l:   "ls"
+      ll:  "ls -l"
+      la:  "ls -a"
+      lla: "ls -la"
+
+  - category: "git"
+    cmds:
+      g:    "git"
+      gp:   "git pull"
+      gc:   "git commit"
+      gca:  "git commit --amend"
+      gcan: "git commit --amend --no-edit"
+      gci:  "mkdir -p .github;touch .github/copilot-instructions.md"
+
+  - category: "bun"
+    cmds:
+      b:   "bun"
+      bd:  "bun dev"
+      bb:  "bun run build"
+      bs:  "bun start"
+      bbs: "bun run build && bun start"
+
+  - category: "sudocode"
+    cmds:
+      sudocode: 'SUDO_EDITOR="$(which code) --wait" sudoedit'
+      scode:    'SUDO_EDITOR="$(which code) --wait" sudoedit'
+
+aliases_darwin: # masos specific aliases
+  - category: "apps"
+    cmds:
+      tailscale: "/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+      "draw.io": "/Applications/draw.io.app/Contents/MacOS/draw.io"
