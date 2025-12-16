@@ -45,6 +45,12 @@ alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
 
+{{- if lookPath "nvidia-smi" }}
+
+# --- nvidia-smi ---
+alias ns='nvidia-smi'
+{{- end }}
+
 
 # ==================== Optimiations ====================
 
