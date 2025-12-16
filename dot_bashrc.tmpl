@@ -85,8 +85,10 @@ _eval_cache "brew" "/home/linuxbrew/.linuxbrew/bin/brew shellenv" "/home/linuxbr
 # mise
 _eval_cache "mise" "mise activate bash" "mise"
 
+{{- if stat (joinPath .chezmoi.homeDir ".cargo" "env") }}
 # rust
 source "$HOME/.cargo/env"
+{{- end }}
 
 # fzf
 _eval_cache "fzf" "fzf --bash" "fzf"
