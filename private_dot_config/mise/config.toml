@@ -1,0 +1,105 @@
+[settings]
+idiomatic_version_file_enable_tools = []
+experimental = true
+disable_default_registry = true
+disable_backends = ["asdf"]
+
+[settings.pipx]
+uvx = true
+
+[settings.npm]
+package_manager = "bun"
+
+[tool_alias]
+# git
+gh = "aqua:cli/cli"
+ghq = "aqua:x-motemen/ghq"
+lazygit = "aqua:jesseduffield/lazygit"
+
+# python
+uv = "aqua:astral-sh/uv"
+ruff = "pipx:ruff"
+ty = "pipx:ty"
+
+# pipx
+zotero-mcp = "pipx:zotero-mcp"
+docling = "pipx:docling"
+pymupdf = "pipx:pymupdf"
+
+# shell
+starship = "cargo:starship"
+sheldon = "cargo:sheldon"
+
+# npm
+gemini = "npm:@google/gemini-cli"
+
+# devtools
+lefthook = "aqua:evilmartians/lefthook"
+nvim = "aqua:neovim/neovim"
+
+# tools
+chezmoi = "aqua:twpayne/chezmoi"
+fastfetch = "aqua:fastfetch-cli/fastfetch"
+fzf = "aqua:junegunn/fzf"
+hyperfine = "cargo:hyperfine"
+bat = "cargo:bat"
+lsd = "cargo:lsd"
+
+
+[tools]
+# programming languages
+go = "latest"
+node = "lts"
+python = "3.13"
+rust = "latest"
+bun = "latest"
+
+# git
+gh = "latest"
+ghq = "latest"
+lazygit = "latest"
+
+# python
+uv = "latest"
+ruff = "latest"
+ty = "latest"
+
+# pipx
+zotero-mcp = "latest"
+docling = "latest"
+pymupdf = "latest"
+
+# shell
+starship = "latest"
+sheldon = "latest"
+
+# npm
+gemini = "latest"
+
+# devtools
+lefthook = "latest"
+nvim = "latest"
+
+# tools
+fastfetch = "latest"
+chezmoi = "latest"
+fzf = "latest"
+hyperfine = "latest"
+bat = "latest"
+lsd = "latest"
+
+# others
+usage = "latest"
+
+
+[tasks.update]
+description = "Update all tools"
+
+[tasks."update.brew"]
+run = ["brew update", "brew upgrade", "brew cleanup"]
+
+[tasks."update.mise"]
+run = ["mise plugin update", "mise upgrade"]
+
+[tasks."update.uv"]
+run = ["uv tool upgrade --all"]

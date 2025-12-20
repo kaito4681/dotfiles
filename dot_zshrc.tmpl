@@ -97,7 +97,9 @@ _eval_cache "brew" "/home/linuxbrew/.linuxbrew/bin/brew shellenv" "/home/linuxbr
 {{- end }}
 
 # mise
+# _eval_cache "mise" "mise activate zsh" "=mise"
 _eval_cache "mise" "mise activate zsh" "=mise"
+
 
 {{- if stat (joinPath .chezmoi.homeDir ".cargo" "env") }}
 # rust
