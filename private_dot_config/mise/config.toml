@@ -91,15 +91,15 @@ lsd = "latest"
 # others
 usage = "latest"
 
-
 [tasks.update]
 description = "Update all tools"
+depends = ["update:brew", "update:mise", "update:uv"]
 
-[tasks."update.brew"]
+[tasks."update:brew"]
 run = ["brew update", "brew upgrade", "brew cleanup"]
 
-[tasks."update.mise"]
-run = ["mise plugin update", "mise upgrade"]
+[tasks."update:mise"]
+run = ["mise self-update", "mise plugin update", "mise upgrade"]
 
-[tasks."update.uv"]
+[tasks."update:uv"]
 run = ["uv tool upgrade --all"]
