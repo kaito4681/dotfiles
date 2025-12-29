@@ -33,7 +33,7 @@ backend = "aqua:twpayne/chezmoi"
 "platforms.windows-x64-baseline" = { checksum = "sha256:a48169627572aeeaf7a46ab0d30906f3786ab84235adf5819850c65762aef3b1", url = "https://github.com/twpayne/chezmoi/releases/download/v2.68.1/chezmoi_2.68.1_windows_amd64.zip"}
 
 [[tools.docling]]
-version = "2.65.0"
+version = "2.66.0"
 backend = "pipx:docling"
 
 [[tools.fastfetch]]
@@ -67,7 +67,7 @@ backend = "aqua:junegunn/fzf"
 "platforms.windows-x64-baseline" = { checksum = "sha256:cad95326ed416d14226a03425513b049f5bc9a41f30a355e5fe204a29e666867", url = "https://github.com/junegunn/fzf/releases/download/v0.67.0/fzf-0.67.0-windows_amd64.zip"}
 
 [[tools.gemini]]
-version = "0.21.3"
+version = "0.22.4"
 backend = "npm:@google/gemini-cli"
 
 [[tools.gh]]
@@ -99,6 +99,11 @@ backend = "aqua:x-motemen/ghq"
 "platforms.macos-x64-baseline" = { checksum = "sha1:f50a794201bac18df1ac8d00e863e9635576aa94", url = "https://github.com/x-motemen/ghq/releases/download/v1.8.0/ghq_darwin_amd64.zip"}
 "platforms.windows-x64" = { checksum = "sha1:008a7afb65de5490506b2786926aca77e2cf53bc", url = "https://github.com/x-motemen/ghq/releases/download/v1.8.0/ghq_windows_amd64.zip"}
 "platforms.windows-x64-baseline" = { checksum = "sha1:008a7afb65de5490506b2786926aca77e2cf53bc", url = "https://github.com/x-motemen/ghq/releases/download/v1.8.0/ghq_windows_amd64.zip"}
+
+[[tools.git-delta]]
+version = "0.18.2"
+backend = "aqua:dandavison/delta"
+"platforms.linux-x64" = { checksum = "blake3:fdd1cd8e8d98a7f2bacc64c2fad07a048ede031be6cd03bde8922d8b8819db07", url = "https://github.com/dandavison/delta/releases/download/0.18.2/delta-0.18.2-x86_64-unknown-linux-musl.tar.gz"}
 
 [[tools.go]]
 version = "1.25.5"
@@ -135,19 +140,9 @@ backend = "aqua:jesseduffield/lazygit"
 "platforms.windows-x64-baseline" = { checksum = "sha256:775a210b3becd262a067d75be33d3d0ecd58cbc2dde3a36ca74e4757b080618c", url = "https://github.com/jesseduffield/lazygit/releases/download/v0.57.0/lazygit_0.57.0_windows_x86_64.zip"}
 
 [[tools.lefthook]]
-version = "2.0.12"
+version = "2.0.13"
 backend = "aqua:evilmartians/lefthook"
-"platforms.linux-arm64" = { checksum = "sha256:4405c0c936c2209202107b4f78a7fe7451f0b4c35ed41ba874901c89fc9d6466", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_aarch64.gz"}
-"platforms.linux-arm64-musl" = { checksum = "sha256:4405c0c936c2209202107b4f78a7fe7451f0b4c35ed41ba874901c89fc9d6466", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_aarch64.gz"}
-"platforms.linux-x64" = { checksum = "sha256:6faaf1bdfcb3f654fc236b76872aeb6d8258cf0a2a5793ddafeac7ed8527bd14", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_x86_64.gz"}
-"platforms.linux-x64-baseline" = { checksum = "sha256:6faaf1bdfcb3f654fc236b76872aeb6d8258cf0a2a5793ddafeac7ed8527bd14", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_x86_64.gz"}
-"platforms.linux-x64-musl" = { checksum = "sha256:6faaf1bdfcb3f654fc236b76872aeb6d8258cf0a2a5793ddafeac7ed8527bd14", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_x86_64.gz"}
-"platforms.linux-x64-musl-baseline" = { checksum = "sha256:6faaf1bdfcb3f654fc236b76872aeb6d8258cf0a2a5793ddafeac7ed8527bd14", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Linux_x86_64.gz"}
-"platforms.macos-arm64" = { checksum = "sha256:9aa9461773162ddbd2aa64750d521d3381bcc1f4f78a012c4f05e7b20f1cb1ce", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_MacOS_arm64.gz"}
-"platforms.macos-x64" = { checksum = "sha256:8c62194853bf74aacdb6a13f16b74b384c97cb8a0d11a7f29ca1e1e40ea506e8", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_MacOS_x86_64.gz"}
-"platforms.macos-x64-baseline" = { checksum = "sha256:8c62194853bf74aacdb6a13f16b74b384c97cb8a0d11a7f29ca1e1e40ea506e8", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_MacOS_x86_64.gz"}
-"platforms.windows-x64" = { checksum = "sha256:e5e002b6551694fedaf0e90d0464ae734dcf8f07f1fa79d036ee0421a0768729", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Windows_x86_64.gz"}
-"platforms.windows-x64-baseline" = { checksum = "sha256:e5e002b6551694fedaf0e90d0464ae734dcf8f07f1fa79d036ee0421a0768729", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.12/lefthook_2.0.12_Windows_x86_64.gz"}
+"platforms.linux-x64" = { checksum = "sha256:1952da844678fcbf4f72e735e0749fad01121b5011dd6b8d83929f46390b7b9f", url = "https://github.com/evilmartians/lefthook/releases/download/v2.0.13/lefthook_2.0.13_Linux_x86_64.gz"}
 
 [[tools.lsd]]
 version = "1.2.0"
@@ -187,6 +182,10 @@ backend = "aqua:neovim/neovim"
 version = "1.26.7"
 backend = "pipx:pymupdf"
 
+[[tools.pytest]]
+version = "9.0.2"
+backend = "pipx:pytest"
+
 [[tools.python]]
 version = "3.13.11"
 backend = "core:python"
@@ -219,21 +218,13 @@ backend = "cargo:starship"
 "platforms.windows-x64-baseline" = { checksum = "sha256:3d0ed9a2efc07fca7560d22ac622473d0b7317cda6a792842f625cb9fe58c7bc", url = "https://github.com/starship/starship/releases/download/v1.24.1/starship-x86_64-pc-windows-msvc.zip"}
 
 [[tools.ty]]
-version = "0.0.5"
+version = "0.0.7"
 backend = "pipx:ty"
 
 [[tools.usage]]
-version = "2.9.0"
+version = "2.10.0"
 backend = "aqua:jdx/usage"
-"platforms.linux-arm64" = { checksum = "sha256:c4d47dad7271bedd45e643fdf07bfd5b8b409e053d29ea25646010ce2d185d64", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-aarch64-unknown-linux-musl.tar.gz"}
-"platforms.linux-arm64-musl" = { checksum = "sha256:c4d47dad7271bedd45e643fdf07bfd5b8b409e053d29ea25646010ce2d185d64", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-aarch64-unknown-linux-musl.tar.gz"}
-"platforms.linux-x64" = { checksum = "sha256:186ac8aaeebd5cae856ac048c4da8aa20f4e81debe065a03db5082439647b8f9", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-x86_64-unknown-linux-musl.tar.gz"}
-"platforms.linux-x64-baseline" = { checksum = "sha256:186ac8aaeebd5cae856ac048c4da8aa20f4e81debe065a03db5082439647b8f9", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-x86_64-unknown-linux-musl.tar.gz"}
-"platforms.linux-x64-musl" = { checksum = "sha256:186ac8aaeebd5cae856ac048c4da8aa20f4e81debe065a03db5082439647b8f9", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-x86_64-unknown-linux-musl.tar.gz"}
-"platforms.linux-x64-musl-baseline" = { checksum = "sha256:186ac8aaeebd5cae856ac048c4da8aa20f4e81debe065a03db5082439647b8f9", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-x86_64-unknown-linux-musl.tar.gz"}
-"platforms.macos-arm64" = { checksum = "sha256:f91655abac0efdc56d608d2a846671f31dcc00a5304d64f99a095b0449bb7076", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-universal-apple-darwin.tar.gz"}
-"platforms.macos-x64" = { checksum = "sha256:f91655abac0efdc56d608d2a846671f31dcc00a5304d64f99a095b0449bb7076", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-universal-apple-darwin.tar.gz"}
-"platforms.macos-x64-baseline" = { checksum = "sha256:f91655abac0efdc56d608d2a846671f31dcc00a5304d64f99a095b0449bb7076", url = "https://github.com/jdx/usage/releases/download/v2.9.0/usage-universal-apple-darwin.tar.gz"}
+"platforms.linux-x64" = { checksum = "sha256:91ac3f7f40ab3ed6d50134dff8a7c0935911a6c109469118624f38afb2e1731a", url = "https://github.com/jdx/usage/releases/download/v2.10.0/usage-x86_64-unknown-linux-musl.tar.gz"}
 
 [[tools.uv]]
 version = "0.9.18"

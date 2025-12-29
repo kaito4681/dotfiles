@@ -15,11 +15,13 @@ package_manager = "bun"
 gh = "aqua:cli/cli"
 ghq = "aqua:x-motemen/ghq"
 lazygit = "aqua:jesseduffield/lazygit"
+git-delta = "aqua:dandavison/delta"
 
 # python
 uv = "aqua:astral-sh/uv"
 ruff = "pipx:ruff"
 ty = "pipx:ty"
+pytest = "pipx:pytest"
 
 # pipx
 zotero-mcp = "pipx:zotero-mcp"
@@ -58,11 +60,13 @@ bun = "latest"
 gh = "latest"
 ghq = "latest"
 lazygit = "latest"
+git-delta = "latest"
 
 # python
 uv = "latest"
 ruff = "latest"
 ty = "latest"
+pytest = "latest"
 
 # pipx
 zotero-mcp = "latest"
