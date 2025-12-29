@@ -1,0 +1,12 @@
+[include]
+{{- $files := glob (printf "%s/.config/git/config.d/*.conf" .chezmoi.homeDir) -}}
+{{- range $files }}
+    path = "{{ . }}"
+{{- end }}
+
+[credential "https://github.com"]
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = !gh auth git-credential
+
+
