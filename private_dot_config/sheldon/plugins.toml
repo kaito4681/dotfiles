@@ -80,3 +80,12 @@ function benchmark() {
 [plugins.zsh-app-launcher]
 github = "kaito4681/zsh-app-launcher"
 apply = ["defer"]
+
+[plugins.zsh-ghq-ssh]
+local = "~/.config/sheldon/plugins/zsh-ghq-ssh"
+apply = ["defer"]
+
+[plugins.my-function]
+inline = """
+alias gtree="git ls-files | tree --fromfile"
+"""
