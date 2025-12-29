@@ -1,6 +1,6 @@
-{{- $u := .github.username -}}
-{{- $id := (output "curl" "-fsSL" (printf "https://api.github.com/users/%s" $u) | fromJson).id -}}
-
 [user]
-    name  = {{ $u }}
-    email = {{ printf "%v+%s@users.noreply.github.com" $id $u }}
+    name  = kaito4681
+    email = 133554451+kaito4681@users.noreply.github.com
+
+[core]
+	excludesfile = ~/.config/git/.gitignore_global
