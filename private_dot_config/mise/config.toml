@@ -107,3 +107,9 @@ run = ["mise self-update", "mise plugin update", "mise upgrade"]
 
 [tasks."update:uv"]
 run = ["uv tool upgrade --all"]
+
+[tasks.setup]
+run = [
+	"mise install",
+	"sheldon lock --update"
+]
