@@ -67,12 +67,38 @@ function _eval_cache() {
     local dep="$3"
     local cache_file="$BASH_CACHE_DIR/$cache_name.bash"
 
-    # Check if cache exists and is newer than dependency
-    if [[ ! -f "$cache_file" ]] || [[ -n "$dep" && "$dep" -nt "$cache_file" ]]; then
-        eval "$cmd" > "$cache_file"
+    # Extract command name from the command string
+    local cmd_name="${cmd%% *}"
+
+    # Skip if command doesn't exist (handle both absolute paths and commands in PATH)
+    if [[ "$cmd_name" == /* ]]; then
+        [[ -x "$cmd_name" ]] || return 0
+    else
+        command -v "$cmd_name" &>/dev/null || return 0
     fi
 
-    source "$cache_file"
+    # Resolve dependency path safely (handle =command syntax)
+    local dep_file=""
+    if [[ -n "$dep" ]]; then
+        if [[ "${dep:0:1}" == "=" ]]; then
+            dep_file="$(command -v "${dep#=}" 2>/dev/null)" || dep_file=""
+        else
+            dep_file="$dep"
+        fi
+    fi
+
+    # Check if cache exists and is newer than dependency
+    if [[ ! -f "$cache_file" ]] || [[ -n "$dep_file" && -f "$dep_file" && "$dep_file" -nt "$cache_file" ]]; then
+        eval "$cmd" > "$cache_file" 2>/dev/null || {
+            rm -f "$cache_file"
+            return 0
+        }
+    fi
+
+    # Source cache if it exists
+    if [[ -f "$cache_file" ]]; then
+        source "$cache_file"
+    fi
 }
 
 # brew
@@ -83,7 +109,7 @@ _eval_cache "brew" "/home/linuxbrew/.linuxbrew/bin/brew shellenv" "/home/linuxbr
 {{- end }}
 
 # mise
-_eval_cache "mise" "mise activate bash" "mise"
+_eval_cache "mise" "mise activate bash" "=mise"
 
 {{- if stat (joinPath .chezmoi.homeDir ".cargo" "env") }}
 # rust
@@ -91,10 +117,10 @@ source "$HOME/.cargo/env"
 {{- end }}
 
 # fzf
-_eval_cache "fzf" "fzf --bash" "fzf"
+_eval_cache "fzf" "fzf --bash" "=fzf"
 
 # uv (python)
-_eval_cache "uv" "uv generate-shell-completion bash" "uv"
+_eval_cache "uv" "uv generate-shell-completion bash" "=uv"
 
 # theme
-_eval_cache "starship" "starship init bash" "starship"
+_eval_cache "starship" "starship init bash" "=starship"
