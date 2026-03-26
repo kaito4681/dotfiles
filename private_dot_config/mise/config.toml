@@ -8,7 +8,7 @@ disable_backends = ["asdf"]
 uvx = true
 
 [settings.npm]
-package_manager = "bun"
+package_manager = "npm"
 
 [tool_alias]
 # git
@@ -29,7 +29,7 @@ docling = "pipx:docling"
 pymupdf = "pipx:pymupdf"
 
 # shell
-starship = "cargo:starship"
+starship = "aqua:starship/starship"
 sheldon = "cargo:sheldon"
 
 # npm
@@ -55,12 +55,16 @@ node = "lts"
 python = "3.13"
 rust = "latest"
 bun = "latest"
+ruby = "latest"
+java = "latest"
+cargo-binstall = "latest"
 
 # git
 gh = "latest"
 ghq = "latest"
 lazygit = "latest"
 git-delta = "latest"
+"go:github.com/d-kuro/gwq/cmd/gwq" = "latest"
 
 # python
 uv = "latest"
@@ -84,6 +88,10 @@ gemini = "latest"
 lefthook = "latest"
 nvim = "latest"
 
+# AI
+"npm:@openai/codex" = "latest"
+"npm:skills" = "latest"
+
 # tools
 fastfetch = "latest"
 chezmoi = "latest"
@@ -91,9 +99,9 @@ fzf = "latest"
 hyperfine = "latest"
 bat = "latest"
 lsd = "latest"
-
-# others
+"aqua:sxyazi/yazi" = "latest"
 usage = "latest"
+
 
 [tasks.update]
 description = "Update all tools"
