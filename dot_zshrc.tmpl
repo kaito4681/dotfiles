@@ -19,7 +19,7 @@ zstyle ':completion:*' group-name ''
 {{- $vars := .vars }}
 
 # --- {{ .category }} ---
-{{- range (keys $vars) }}
+{{- range sortAlpha (keys $vars) }}
 export {{ printf . }}="{{ index $vars . }}"
 {{- end }}
 {{- end }}
@@ -36,7 +36,7 @@ export PATH="{{ .paths | join ":" }}:$PATH"
 {{- $cmds := .cmds }}
 
 # --- {{ .category }} ---
-{{- range (keys $cmds) }}
+{{- range sortAlpha (keys $cmds) }}
 alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
@@ -47,7 +47,7 @@ alias {{ . }}='{{ index $cmds . }}'
 {{- $cmds := .cmds }}
 
 # --- {{ .category }}(macOS) ---
-{{- range (keys $cmds) }}
+{{- range sortAlpha (keys $cmds) }}
 alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
@@ -67,12 +67,56 @@ if [[ ! -d "$ZSH_CACHE_DIR" ]]; then
     mkdir -p "$ZSH_CACHE_DIR"
 fi
 
+# Replace the cache atomically, but only when the generated output actually changed.
+function _eval_cache_build() {
+    emulate -L zsh
+
+    local cache_name="$1"
+    local cmd="$2"
+    local cache_file="$ZSH_CACHE_DIR/$cache_name.zsh"
+    local tmp_cache=""
+
+    tmp_cache="$(mktemp "$ZSH_CACHE_DIR/${cache_name}.tmp.XXXXXX")" || return 1
+    if eval "$cmd" >| "$tmp_cache" 2>/dev/null && [[ -s "$tmp_cache" ]] && zsh -n "$tmp_cache" &>/dev/null; then
+        if [[ ! -f "$cache_file" ]] || ! cmp -s "$tmp_cache" "$cache_file" 2>/dev/null; then
+            mv -f "$tmp_cache" "$cache_file"
+            rm -f "$cache_file.zwc"
+            zcompile "$cache_file" 2>/dev/null || rm -f "$cache_file.zwc"
+        else
+            rm -f "$tmp_cache"
+        fi
+        return 0
+    fi
+
+    rm -f "$tmp_cache"
+    return 1
+}
+
+function _eval_cache_refresh_async() {
+    emulate -L zsh
+    setopt local_options no_bg_nice
+
+    local cache_name="$1"
+    local cmd="$2"
+    local cache_file="$ZSH_CACHE_DIR/$cache_name.zsh"
+    local lock_dir="$cache_file.lock"
+
+    mkdir "$lock_dir" 2>/dev/null || return 0
+    (
+        _eval_cache_build "$cache_name" "$cmd"
+        rmdir "$lock_dir" 2>/dev/null
+    ) >/dev/null 2>&1 &!
+}
+
 # Usage: _eval_cache <cache_name> <command> <dependency_file>
 function _eval_cache() {
+    emulate -L zsh
+
     local cache_name="$1"
     local cmd="$2"
     local dep="$3"
     local cache_file="$ZSH_CACHE_DIR/$cache_name.zsh"
+    local lock_dir="$cache_file.lock"
 
     # Extract command name from the command string
     local cmd_name="${cmd%% *}"
@@ -87,28 +131,49 @@ function _eval_cache() {
     # Resolve dependency path safely (handle =command syntax)
     local dep_file=""
     if [[ -n "$dep" ]]; then
-        if [[ "${dep[1]}" == "=" ]]; then
+        if [[ "$dep" == [=]* ]]; then
             dep_file="$(command -v "${dep#=}" 2>/dev/null)" || dep_file=""
         else
             dep_file="$dep"
         fi
     fi
 
-    # Check if cache exists and is newer than dependency
-    if [[ ! -f "$cache_file" ]] || [[ -n "$dep_file" && -f "$dep_file" && "$dep_file" -nt "$cache_file" ]]; then
-        eval "$cmd" > "$cache_file" 2>/dev/null || {
-            rm -f "$cache_file" "$cache_file.zwc"
-            return 0
-        }
-        zcompile "$cache_file" 2>/dev/null
+    local needs_refresh=0
+    local live_init=""
+
+    # First shell after install still builds synchronously so the current session is correct.
+    if [[ ! -f "$cache_file" ]] && mkdir "$lock_dir" 2>/dev/null; then
+        _eval_cache_build "$cache_name" "$cmd" || true
+        rmdir "$lock_dir" 2>/dev/null
     fi
 
-    # Source cache if it exists
+    if [[ -f "$cache_file" && -n "$dep_file" && -f "$dep_file" && "$dep_file" -nt "$cache_file" ]]; then
+        needs_refresh=1
+    fi
+
+    # Source cache first for fast startup, then refresh in the background if it looks stale.
     if [[ -f "$cache_file" ]]; then
         if [[ ! -f "$cache_file.zwc" || "$cache_file" -nt "$cache_file.zwc" ]]; then
-            zcompile "$cache_file" 2>/dev/null
+            zcompile "$cache_file" 2>/dev/null || rm -f "$cache_file.zwc"
         fi
-        source "$cache_file"
+        # Let init scripts keep shell option changes such as `setopt promptsubst`.
+        unsetopt local_options
+        if source "$cache_file" 2>/dev/null; then
+            (( needs_refresh )) && _eval_cache_refresh_async "$cache_name" "$cmd"
+            return 0
+        fi
+        rm -f "$cache_file" "$cache_file.zwc"
+    fi
+
+    # If caching fails, fall back to live initialization for the current shell.
+    live_init="$(eval "$cmd" 2>/dev/null)" || return 0
+    [[ -n "$live_init" ]] || return 0
+    unsetopt local_options
+    eval "$live_init"
+
+    if mkdir "$lock_dir" 2>/dev/null; then
+        _eval_cache_build "$cache_name" "$cmd" || true
+        rmdir "$lock_dir" 2>/dev/null
     fi
 }
 

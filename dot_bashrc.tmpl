@@ -11,7 +11,7 @@ export BASH_SILENCE_DEPRECATION_WARNING="1"
 {{- $vars := .vars }}
 
 # --- {{ .category }} ---
-{{- range (keys $vars) }}
+{{- range sortAlpha (keys $vars) }}
 export {{ printf . }}="{{ index $vars . }}"
 {{- end }}
 {{- end }}
@@ -28,7 +28,7 @@ export PATH="{{ .paths | join ":" }}:$PATH"
 {{- $cmds := .cmds }}
 
 # --- {{ .category }} ---
-{{- range (keys $cmds) }}
+{{- range sortAlpha (keys $cmds) }}
 alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
@@ -39,7 +39,7 @@ alias {{ . }}='{{ index $cmds . }}'
 {{- $cmds := .cmds }}
 
 # --- {{ .category }}(macOS) ---
-{{- range (keys $cmds) }}
+{{- range sortAlpha (keys $cmds) }}
 alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
@@ -66,6 +66,7 @@ function _eval_cache() {
     local cmd="$2"
     local dep="$3"
     local cache_file="$BASH_CACHE_DIR/$cache_name.bash"
+    local lock_dir="$cache_file.lock"
 
     # Extract command name from the command string
     local cmd_name="${cmd%% *}"
@@ -87,18 +88,38 @@ function _eval_cache() {
         fi
     fi
 
-    # Check if cache exists and is newer than dependency
+    local needs_refresh=0
+    local tmp_cache=""
+    local live_init=""
+
+    # Refresh when the cache is missing or stale.
     if [[ ! -f "$cache_file" ]] || [[ -n "$dep_file" && -f "$dep_file" && "$dep_file" -nt "$cache_file" ]]; then
-        eval "$cmd" > "$cache_file" 2>/dev/null || {
-            rm -f "$cache_file"
-            return 0
-        }
+        needs_refresh=1
+    fi
+
+    # Build into a temporary file first so an interrupted write never leaves a partial cache behind.
+    if (( needs_refresh )) && mkdir "$lock_dir" 2>/dev/null; then
+        tmp_cache="$(mktemp "$BASH_CACHE_DIR/${cache_name}.tmp.XXXXXX")" || tmp_cache=""
+        if [[ -n "$tmp_cache" ]] && eval "$cmd" >| "$tmp_cache" 2>/dev/null && [[ -s "$tmp_cache" ]] && bash -n "$tmp_cache" &>/dev/null; then
+            mv -f "$tmp_cache" "$cache_file"
+        else
+            rm -f "$tmp_cache"
+        fi
+        rmdir "$lock_dir" 2>/dev/null
     fi
 
     # Source cache if it exists
     if [[ -f "$cache_file" ]]; then
-        source "$cache_file"
+        if source "$cache_file" 2>/dev/null; then
+            return 0
+        fi
+        rm -f "$cache_file"
     fi
+
+    # If caching fails, fall back to live initialization for the current shell.
+    live_init="$(eval "$cmd" 2>/dev/null)" || return 0
+    [[ -n "$live_init" ]] || return 0
+    eval "$live_init"
 }
 
 # brew
