@@ -1,0 +1,46 @@
+{{- $username := dig "github" "username" "" . -}}
+{{- $begin := "# >>> chezmoi managed: github keys >>>" -}}
+{{- $end := "# <<< chezmoi managed: github keys <<<" -}}
+{{- $path := joinPath .chezmoi.homeDir ".ssh" "authorized_keys" -}}
+{{- $existing := output "sh" "-c" (printf "if [ -f %q ]; then cat %q; fi" $path $path) -}}
+{{- $unmanaged := list -}}
+{{- $inManaged := false -}}
+{{- if $existing -}}
+{{- range (splitList "\n" (trimSuffix "\n" $existing)) -}}
+{{- if eq . $begin -}}
+{{- $inManaged = true -}}
+{{- else if eq . $end -}}
+{{- $inManaged = false -}}
+{{- else if not $inManaged -}}
+{{- $unmanaged = append $unmanaged . -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- $unmanagedText := "" -}}
+{{- if $unmanaged -}}
+{{- $unmanagedText = $unmanaged | join "\n" -}}
+{{- end -}}
+{{- $managed := list -}}
+{{- if $username -}}
+{{- $keys := output "curl" "-fsSL" (printf "https://github.com/%s.keys" $username) | trim -}}
+{{- if $keys -}}
+{{- range ($keys | splitList "\n") -}}
+{{- $parts := splitList " " . -}}
+{{- $blob := "" -}}
+{{- if ge (len $parts) 2 -}}
+{{- $blob = index $parts 1 -}}
+{{- end -}}
+{{- if and . (or (not $blob) (not (contains $blob $unmanagedText))) -}}
+{{- $managed = append $managed . -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if $unmanagedText -}}
+{{ printf "%s\n" $unmanagedText -}}
+{{- end -}}
+{{- if $managed -}}
+{{ printf "%s\n" $begin -}}
+{{ printf "%s\n" ($managed | join "\n") -}}
+{{ printf "%s\n" $end -}}
+{{- end -}}

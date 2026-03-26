@@ -1,0 +1,14 @@
+**
+{{- $username := dig "github" "username" "" . -}}
+{{- $begin := "# >>> chezmoi managed: github keys >>>" -}}
+{{- $path := joinPath .chezmoi.homeDir ".ssh" "authorized_keys" -}}
+{{- $existing := output "sh" "-c" (printf "if [ -f %q ]; then cat %q; fi" $path $path) -}}
+{{- $hasManagedBlock := contains $begin $existing -}}
+{{- $keys := "" -}}
+{{- if $username -}}
+{{- $keys = output "curl" "-fsSL" (printf "https://github.com/%s.keys" $username) | trim -}}
+{{- end -}}
+{{- if or $keys $hasManagedBlock }}
+!authorized_keys
+!authorized_keys.tmpl
+{{- end -}}
