@@ -1,9 +1,53 @@
 [alias]
 	# status
-	s = status
+	s  = status
 	ss = status --short
+	sb = status --short --branch
 
-	co = checkout
-	br = branch
+	# branch / switch / checkout
+	b   = branch
+	ba  = branch -a
+	co  = checkout
+	cb  = checkout -b
+	sw  = switch
+	swc = switch -c
 
-	d = diff
+	# diff
+	d  = diff
+	ds = diff --staged
+
+	# add
+	a  = add
+	aa = add --all
+
+	# commit
+	c   = commit
+	cm  = commit -m
+	ca  = commit --amend
+	can = commit --amend --no-edit
+
+	# log
+	l  = log --oneline
+	lg = log --graph --oneline --decorate --all
+
+	# stash
+	sh  = stash
+	sk  = stash --keep-index
+	sku = stash --keep-index --include-untracked
+	sl  = stash list
+	sp  = stash pop
+
+	# reset / restore
+	rt = reset
+	rs = restore
+
+	# fetch / pull / push
+	f  = fetch
+	p  = pull
+	ps = push
+
+	# merge / rebase
+	m   = merge
+	rb  = rebase
+	rbc = rebase --continue
+	rba = rebase --abort
