@@ -22,7 +22,13 @@
 {{- end -}}
 {{- $managed := list -}}
 {{- if $username -}}
-{{- $keys := output "curl" "-fsSL" (printf "https://github.com/%s.keys" $username) | trim -}}
+{{- $ghOK := output "sh" "-c" "command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && echo true || echo false" | trim -}}
+{{- $keys := "" -}}
+{{- if eq $ghOK "true" -}}
+{{- $keys = output "gh" "api" (printf "users/%s/keys" $username) "--jq" ".[].key" | trim -}}
+{{- else -}}
+{{- $keys = output "curl" "-fsSL" (printf "https://github.com/%s.keys" $username) | trim -}}
+{{- end -}}
 {{- if $keys -}}
 {{- range ($keys | splitList "\n") -}}
 {{- $parts := splitList " " . -}}

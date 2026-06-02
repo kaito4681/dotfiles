@@ -1,6 +1,18 @@
 {{- $u := .github.username -}}
-{{- $id := (output "curl" "-fsSL" (printf "https://api.github.com/users/%s" $u) | fromJson).id -}}
+{{- $ghOK := output "sh" "-c" "command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && echo true || echo false" | trim -}}
+{{- $id := "" -}}
+{{- if eq $ghOK "true" -}}
+{{- $id = output "gh" "api" (printf "users/%s" $u) "--jq" ".id" | trim -}}
+{{- else -}}
+{{- $id = (output "curl" "-fsSL" (printf "https://api.github.com/users/%s" $u) | fromJson).id -}}
+{{- end -}}
 
 [user]
     name  = {{ $u }}
     email = {{ printf "%v+%s@users.noreply.github.com" $id $u }}
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
