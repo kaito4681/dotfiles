@@ -1,14 +1,20 @@
 [settings]
-idiomatic_version_file_enable_tools = []
-experimental = true
+experimental = false
 disable_default_registry = true
-disable_backends = ["asdf"]
+disable_backends = ["asdf", "vfox"]
+idiomatic_version_file_enable_tools = ["python", "npm", "bun"]
+minimum_release_age = "7d"
+paranoid = true
+yes = true
 
 [settings.pipx]
 uvx = true
 
 [settings.npm]
-package_manager = "npm"
+package_manager = "bun"
+
+[settings.github]
+credential_command = "gh auth token"
 
 [tool_alias]
 # git
@@ -16,11 +22,12 @@ gh = "aqua:cli/cli"
 ghq = "aqua:x-motemen/ghq"
 lazygit = "aqua:jesseduffield/lazygit"
 git-delta = "aqua:dandavison/delta"
+git-lfs = "aqua:git-lfs/git-lfs"
 
 # python
 uv = "aqua:astral-sh/uv"
-ruff = "pipx:ruff"
-ty = "pipx:ty"
+ruff = "aqua:astral-sh/ruff"
+ty = "aqua:astral-sh/ty"
 pytest = "pipx:pytest"
 
 # pipx
@@ -30,10 +37,11 @@ pymupdf = "pipx:pymupdf"
 
 # shell
 starship = "aqua:starship/starship"
-sheldon = "cargo:sheldon"
+sheldon = "aqua:rossmacarthur/sheldon"
 
-# npm
+# ai
 gemini = "npm:@google/gemini-cli"
+codex = "aqua:openai/codex"
 
 # devtools
 lefthook = "aqua:evilmartians/lefthook"
@@ -43,27 +51,38 @@ nvim = "aqua:neovim/neovim"
 chezmoi = "aqua:twpayne/chezmoi"
 fastfetch = "aqua:fastfetch-cli/fastfetch"
 fzf = "aqua:junegunn/fzf"
-hyperfine = "cargo:hyperfine"
-bat = "cargo:bat"
-lsd = "cargo:lsd"
+hyperfine = "aqua:sharkdp/hyperfine"
+bat = "aqua:sharkdp/bat"
+lsd = "aqua:lsd-rs/lsd"
+tmux = "aqua:tmux/tmux-builds"
+rg = "aqua:BurntSushi/ripgrep"
+pandoc = "github:jgm/pandoc"
+peco = "aqua:peco/peco"
+swiftlint = "aqua:realm/SwiftLint"
 
 
 [tools]
 # programming languages
-go = "latest"
 node = "lts"
+deno = "latest"
+pnpm = "latest"
+bun = "latest"
 python = "3.13"
 rust = "latest"
-bun = "latest"
-ruby = "latest"
-java = "latest"
 cargo-binstall = "latest"
+go = "latest"
+ruby = "latest"
+# php = "latest"
+perl = "latest"
+java = "latest"
+typst = "latest"
 
 # git
 gh = "latest"
 ghq = "latest"
 lazygit = "latest"
 git-delta = "latest"
+git-lfs = "latest"
 "go:github.com/d-kuro/gwq/cmd/gwq" = "latest"
 
 # python
@@ -72,24 +91,17 @@ ruff = "latest"
 ty = "latest"
 pytest = "latest"
 
-# pipx
-zotero-mcp = "latest"
-docling = "latest"
-pymupdf = "latest"
-
 # shell
 starship = "latest"
 sheldon = "latest"
-
-# npm
-gemini = "latest"
 
 # devtools
 lefthook = "latest"
 nvim = "latest"
 
 # AI
-"npm:@openai/codex" = "latest"
+gemini = "latest"
+codex = "latest"
 "npm:skills" = "latest"
 
 # tools
@@ -101,6 +113,13 @@ bat = "latest"
 lsd = "latest"
 "aqua:sxyazi/yazi" = "latest"
 usage = "latest"
+tmux = "latest"
+ffmpeg = "latest"
+"npm:vercel" = "latest"
+rg = "latest"
+pandoc = "latest"
+peco = "latest"
+swiftlint = "latest"
 
 
 [tasks.update]
@@ -111,10 +130,15 @@ depends = ["update:brew", "update:mise", "update:uv", "update:sheldon"]
 run = ["brew update", "brew upgrade", "brew cleanup"]
 
 [tasks."update:mise"]
-run = ["mise self-update", "mise plugin update", "mise upgrade"]
-
+run = [
+	"mise plugin uninstall --all",
+	"mise self-update -y",
+	"mise upgrade -y",
+	# "MISE_MINIMUM_RELEASE_AGE=7d mise prune --tools -y",
+	"mise prune --configs -y",
+]
 [tasks."update:uv"]
-run = ["uv tool upgrade --all"]
+run = ["uv tool upgrade --all", "uv cache prune -v"]
 
 [tasks."update:sheldon"]
 run = ["sheldon lock --update"]
