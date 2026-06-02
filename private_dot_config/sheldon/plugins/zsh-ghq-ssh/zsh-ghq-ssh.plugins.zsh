@@ -8,19 +8,43 @@ __ghq_search_local() {
     ghq list --full-path | sed 's|^|local:|'
 }
 
+# Resolve remote hosts from GHQ_REMOTE_HOSTS or SSH completion aliases.
+__ghq_remote_hosts() {
+    emulate -L zsh
+
+    if [[ -n "${GHQ_REMOTE_HOSTS}" ]]; then
+        print -l ${(s: :)GHQ_REMOTE_HOSTS}
+        return
+    fi
+
+    if (( $+functions[__ssh_completion_hosts] )); then
+        __ssh_completion_hosts
+        return
+    fi
+
+    print -r -- "error:GHQ_REMOTE_HOSTS_not_set"
+}
+
 # Search remote ghq repositories
 __ghq_search_remote() {
-    if [[ -z "${GHQ_REMOTE_HOSTS}" ]]; then
+    local -a hosts
+    hosts=("${(@f)$(__ghq_remote_hosts)}")
+
+    if (( ! $#hosts )) || [[ "${hosts[1]}" == error:* ]]; then
         echo "error:GHQ_REMOTE_HOSTS_not_set"
         return
     fi
 
     local pids=()
-    for host in ${(s: :)GHQ_REMOTE_HOSTS}; do
+    local host
+    for host in "${hosts[@]}"; do
         local ghq_path="ghq"
         local var_name="GHQ_PATH_${host}"
+        local normalized_var_name="GHQ_PATH_${host//[^[:alnum:]_]/_}"
         if [[ -n "${(P)var_name}" ]]; then
             ghq_path="${(P)var_name}"
+        elif [[ "$normalized_var_name" != "$var_name" && -n "${(P)normalized_var_name}" ]]; then
+            ghq_path="${(P)normalized_var_name}"
         fi
         ssh -q "$host" "$ghq_path list --full-path" 2>/dev/null | sed "s|^|remote:$host:|" &
         pids+=($!)

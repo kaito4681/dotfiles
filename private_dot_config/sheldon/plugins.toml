@@ -18,23 +18,41 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 github = "romkatv/zsh-defer"
 
 
-
 # 2. 補完データ（辞書）の追加
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
-apply = ["defer"]
 
 
 # 3. 補完システムの起動（重要：これはcompletionsの後，highlightingの前に必要）
 #    これがないと補完が動きません
 [plugins.compinit]
-inline = 'autoload -Uz compinit && zsh-defer "compinit; for c in \"\${__compdef_queue[@]}\"; do compdef \${=c}; done; unset __compdef_queue"'
+inline = '''
+autoload -Uz compinit
+compinit
 
-# 4. Fish風のメニュー選択（fzf-tab）
-#    これを入れるとTabで選択画面が出ます
+for c in "${__compdef_queue[@]}"; do
+    [[ -n "$c" ]] || continue
+    compdef ${=c}
+done
+unset __compdef_queue
+'''
+
 [plugins.fzf-tab]
 github = "Aloxaf/fzf-tab"
-apply = ["defer"]
+
+[plugins.fzf-tab-config]
+inline = '''
+zstyle ':completion:*' menu no
+zstyle ':completion:*:descriptions' format '-- %d --'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':fzf-tab:*' fzf-command fzf
+zstyle ':fzf-tab:*' fzf-flags --height=40% --layout=reverse --border
+zstyle ':fzf-tab:*' switch-group ',' '.'
+'''
+
+[plugins.ssh-host-completion]
+local = "~/.config/sheldon/plugins/ssh-host-completion"
 
 # 5. オートサジェスト（入力予測）
 [plugins.zsh-autosuggestions]
@@ -75,7 +93,7 @@ inline = '''
 function benchmark() {
     hyperfine --warmup 3 --runs 10 'zsh -i -c exit'
 }
-'''	
+'''
 
 [plugins.zsh-app-launcher]
 github = "kaito4681/zsh-app-launcher"
