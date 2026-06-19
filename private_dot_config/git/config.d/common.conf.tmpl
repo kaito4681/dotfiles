@@ -1,4 +1,4 @@
-{{- $u := .github.username -}}
+{{- $u := dig "github" "username" "kaito4681" . -}}
 {{- $ghOK := output "sh" "-c" "command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && echo true || echo false" | trim -}}
 {{- $id := "" -}}
 {{- if eq $ghOK "true" -}}

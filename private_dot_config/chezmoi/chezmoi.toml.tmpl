@@ -1,3 +1,6 @@
+[data.github]
+username = {{ dig "github" "username" "kaito4681" . | quote }}
+
 [cd]
 command = "zsh"
 
@@ -9,6 +12,6 @@ args = ["setup"]
 command = "mise"
 args = ["update"]
 
-[diff]
-command = "code"
-args = ["--wait", "--diff"]
+# [diff]
+# command = "code"
+# args = ["--wait", "--diff"]
