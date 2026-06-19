@@ -1,5 +1,5 @@
 [settings]
-experimental = false
+experimental = true
 disable_default_registry = true
 disable_backends = ["asdf", "vfox"]
 idiomatic_version_file_enable_tools = ["python", "npm", "bun"]
@@ -15,6 +15,34 @@ package_manager = "bun"
 
 [settings.github]
 credential_command = "gh auth token"
+
+[bootstrap.packages] # experimental
+{{- if eq .chezmoi.os "darwin" }}
+# macOS
+"brew:autoconf" = "latest"
+"brew:gmp" = "latest"
+"brew:libyaml" = "latest"
+"brew:openssl@3" = "latest"
+"brew:pkg-config" = "latest"
+"brew:readline" = "latest"
+"brew:sqlite3" = "latest"
+"brew:tcl-tk@8" = "latest"
+"brew:xz" = "latest"
+"brew:zlib" = "latest"
+{{- else if eq .chezmoi.os "linux" }}
+{{- if or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default "")) }}
+# Debian / Ubuntu
+"apt:autoconf" = "latest"
+"apt:build-essential" = "latest"
+"apt:curl" = "latest"
+"apt:git" = "latest"
+"apt:libffi-dev" = "latest"
+"apt:libgmp-dev" = "latest"
+"apt:libssl-dev" = "latest"
+"apt:libyaml-dev" = "latest"
+"apt:zlib1g-dev" = "latest"
+{{- end }}
+{{- end }}
 
 [tool_alias]
 # git
@@ -124,10 +152,30 @@ swiftlint = "latest"
 
 [tasks.update]
 description = "Update all tools"
-depends = ["update:brew", "update:mise", "update:uv", "update:sheldon"]
+# sudo のパスワード入力だけ先に単独で済ませ(プロンプトが他タスクの出力に
+# 埋もれないように)、以降は update:packages も含めて全部並列(:::)で回す。
+run = [
+{{- if and (eq .chezmoi.os "linux") (or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default ""))) }}
+	"sudo -v",
+{{- end }}
+	"mise run update:packages ::: update:mise ::: update:uv ::: update:sheldon{{ if eq .chezmoi.os "darwin" }} ::: update:brew{{ end }}",
+]
 
+[tasks."update:packages"]
+run = [
+{{- if and (eq .chezmoi.os "linux") (or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default ""))) }}
+	# apt の更新で sudo を使うが、mise のサブプロセスは TTY を持たずパスワードを聞けない。
+	# 先にここで認証してクレデンシャルをキャッシュさせておく。
+	"sudo -v",
+{{- end }}
+	"mise bootstrap packages upgrade -y",
+]
+
+{{- if eq .chezmoi.os "darwin" }}
 [tasks."update:brew"]
-run = ["brew update", "brew upgrade", "brew cleanup"]
+run = ["mise bootstrap packages upgrade --brew", "brew update", "brew upgrade", "brew cleanup"]
+{{- end }}
+
 
 [tasks."update:mise"]
 run = [
@@ -138,10 +186,14 @@ run = [
 	"mise prune --configs -y",
 ]
 [tasks."update:uv"]
-run = ["uv tool upgrade --all", "uv cache prune -v"]
+run = [
+	"uv tool upgrade --all",
+	# uv の実行中ジョブがある間は cache prune がロック待ちで固まるのでスキップ
+	"pgrep -f 'uv run' >/dev/null || uv cache prune -v",
+]
 
 [tasks."update:sheldon"]
 run = ["sheldon lock --update"]
 
 [tasks.setup]
-run = ["mise install", "sheldon lock --update"]
+run = ["mise bootstrap packages install --update", "mise install", "sheldon lock --update"]
