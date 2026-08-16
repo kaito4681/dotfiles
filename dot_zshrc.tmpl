@@ -43,6 +43,10 @@ alias {{ . }}='{{ index $cmds . }}'
 alias ns='nvidia-smi'
 {{- end }}
 
+# ==================== Key bindings ====================
+
+bindkey -e
+
 # ==================== Initializations ====================
 
 # 最初のプロンプトに必要な処理だけを同期読み込みする。
