@@ -100,7 +100,7 @@ __ssh_fzf_select_host() {
         return 1
     fi
 
-    stty -ixon < /dev/tty 2>/dev/null
+    { stty -ixon < /dev/tty } 2>/dev/null
 
     local mode_file="${TMPDIR:-/tmp}/ssh-fzf-mode.$$.$RANDOM"
     print -r -- "ssh" > "$mode_file"
@@ -163,9 +163,10 @@ __ssh_fzf_widget() {
 }
 
 if [[ -o interactive ]]; then
-    stty -ixon 2>/dev/null
+    { stty -ixon < /dev/tty } 2>/dev/null
     zle -N __ssh_fzf_widget
-    bindkey '^S' __ssh_fzf_widget
+    bindkey -M emacs '^S' __ssh_fzf_widget
+    bindkey -M viins '^S' __ssh_fzf_widget
 fi
 
 zstyle -e ':completion:*:*:ssh:*:hosts' hosts 'reply=("${(@f)$(__ssh_completion_hosts)}")'
