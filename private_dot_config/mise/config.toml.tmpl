@@ -145,24 +145,9 @@ swiftlint = "latest"
 
 
 [tasks.update]
-description = "Update all tools"
-# sudo のパスワード入力だけ先に単独で済ませ(プロンプトが他タスクの出力に
-# 埋もれないように)、以降は update:packages も含めて全部並列(:::)で回す。
+description = "Update mise tools"
 run = [
-{{- if and (eq .chezmoi.os "linux") (or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default ""))) }}
-	"sudo -v",
-{{- end }}
-	"mise run update:packages ::: update:mise ::: update:uv ::: update:sheldon{{ if eq .chezmoi.os "darwin" }} ::: update:brew{{ end }}",
-]
-
-[tasks."update:packages"]
-run = [
-{{- if and (eq .chezmoi.os "linux") (or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default ""))) }}
-	# apt の更新で sudo を使うが、mise のサブプロセスは TTY を持たずパスワードを聞けない。
-	# 先にここで認証してクレデンシャルをキャッシュさせておく。
-	"sudo -v",
-{{- end }}
-	"mise bootstrap packages upgrade -y",
+	"mise run update:mise ::: update:uv ::: update:sheldon",
 ]
 
 {{- if eq .chezmoi.os "darwin" }}
