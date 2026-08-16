@@ -54,39 +54,48 @@ alias ns='nvidia-smi'
 
 # ==================== Initializations ====================
 
-# nix
-if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-fi
+# 最初のプロンプトに必要な処理だけを同期読み込みする。
+PS1='\[\033[36m\]\W\[\033[0m\] \[\033[32m\]❯\[\033[0m\] '
 
-# brew
+# Bash には zsh-defer 相当のアイドル時ローダーがないため、重い初期化は
+# 最初のコマンドを実行する直前まで遅延する。
+__deferred_shell_init() {
+    # nix
+    if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
+        . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    fi
+
+    # brew
 {{- if eq .chezmoi.os "darwin" }}
-if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
 {{- end }}
 
-# mise
-if command -v mise &>/dev/null; then
-    eval "$(mise activate bash)"
-fi
+    # mise
+    if command -v mise &>/dev/null; then
+        eval "$(mise activate bash)"
+    fi
 
 {{- if stat (joinPath .chezmoi.homeDir ".cargo" "env") }}
-# rust
-source "$HOME/.cargo/env"
+    # rust
+    source "$HOME/.cargo/env"
 {{- end }}
 
-# fzf
-if command -v fzf &>/dev/null; then
-    eval "$(fzf --bash)"
-fi
+    # fzf
+    if command -v fzf &>/dev/null; then
+        eval "$(fzf --bash)"
+    fi
 
-# uv (python)
-if command -v uv &>/dev/null; then
-    eval "$(uv generate-shell-completion bash)"
-fi
+    # uv (python)
+    if command -v uv &>/dev/null; then
+        eval "$(uv generate-shell-completion bash)"
+    fi
 
-# theme
-if command -v starship &>/dev/null; then
-    eval "$(starship init bash)"
-fi
+    # theme
+    if command -v starship &>/dev/null; then
+        eval "$(starship init bash)"
+    fi
+}
+
+trap '__deferred_shell_init; trap - DEBUG; unset -f __deferred_shell_init' DEBUG
