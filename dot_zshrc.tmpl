@@ -12,7 +12,7 @@ export {{ printf . }}="{{ index $vars . }}"
 # ==================== Paths ====================
 
 # --- all paths ---
-export PATH="{{ .paths | join ":" }}:$PATH"
+export PATH="{{ .paths | join ":" }}{{ if eq .chezmoi.os "darwin" }}:{{ .paths_darwin | join ":" }}{{ end }}:$PATH"
 
 
 # ==================== Aliases ====================
