@@ -24,6 +24,7 @@ local = "~/.config/sheldon/plugins/local/sync"
 use = [
     "ssh-terminal.plugin.zsh",
     "completion-bootstrap.plugin.zsh",
+    "chezmoi.plugin.zsh",
 ]
 apply = ["sync"]
 

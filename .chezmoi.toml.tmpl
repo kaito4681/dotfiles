@@ -1,9 +1,6 @@
 [data.github]
 username = {{ promptStringOnce . "github.username" "GitHub username" "kaito4681" | quote }}
 
-[cd]
-command = "zsh"
-
 [hooks.update.post]
 command = "sh"
 args = ["-c", "if command -v mise >/dev/null 2>&1; then exec mise update; elif [ -x \"$HOME/.local/bin/mise\" ]; then exec \"$HOME/.local/bin/mise\" update; fi"]
