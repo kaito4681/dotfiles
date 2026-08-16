@@ -87,6 +87,11 @@ __deferred_shell_init() {
         eval "$(fzf --bash)"
     fi
 
+    # zoxide
+    if command -v zoxide &>/dev/null; then
+        eval "$(zoxide init bash)"
+    fi
+
     # uv (python)
     if command -v uv &>/dev/null; then
         eval "$(uv generate-shell-completion bash)"

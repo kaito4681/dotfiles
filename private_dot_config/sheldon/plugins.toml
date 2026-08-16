@@ -38,6 +38,7 @@ use = [
     "nix.plugin.zsh",
     "uv.plugin.zsh",
     "fzf.plugin.zsh",
+    "zoxide.plugin.zsh",
 ]
 apply = ["defer"]
 
