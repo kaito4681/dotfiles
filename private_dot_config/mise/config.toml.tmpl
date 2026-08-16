@@ -1,9 +1,8 @@
 [settings]
 experimental = true
-disable_default_registry = true
+disable_default_registry = false
 disable_backends = ["asdf", "vfox"]
 idiomatic_version_file_enable_tools = ["python", "npm", "bun"]
-minimum_release_age = "7d"
 paranoid = true
 yes = true
 
@@ -67,9 +66,6 @@ pymupdf = "pipx:pymupdf"
 starship = "aqua:starship/starship"
 sheldon = "aqua:rossmacarthur/sheldon"
 
-# ai
-gemini = "npm:@google/gemini-cli"
-
 # devtools
 lefthook = "aqua:evilmartians/lefthook"
 nvim = "aqua:neovim/neovim"
@@ -127,7 +123,7 @@ lefthook = "latest"
 nvim = "latest"
 
 # AI
-gemini = "latest"
+codex = "latest"
 "npm:skills" = "latest"
 
 # tools
@@ -171,7 +167,7 @@ run = [
 
 {{- if eq .chezmoi.os "darwin" }}
 [tasks."update:brew"]
-run = ["mise bootstrap packages upgrade --brew", "brew update", "brew upgrade", "brew cleanup"]
+run = ["brew update", "brew upgrade", "brew cleanup"]
 {{- end }}
 
 
@@ -180,7 +176,7 @@ run = [
 	"mise plugin uninstall --all",
 	"mise self-update -y",
 	"mise upgrade -y",
-	# "MISE_MINIMUM_RELEASE_AGE=7d mise prune --tools -y",
+	"mise prune --tools -y",
 	"mise prune --configs -y",
 ]
 [tasks."update:uv"]
