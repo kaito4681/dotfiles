@@ -1,13 +1,6 @@
 [data.github]
 username = {{ dig "github" "username" "kaito4681" . | quote }}
 
-[cd]
-command = "zsh"
-
-[hooks.apply.post]
-command = "mise"
-args = ["setup"]
-
 [hooks.update.post]
 command = "mise"
 args = ["update"]
