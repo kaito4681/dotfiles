@@ -8,7 +8,8 @@ shell = "zsh"
 
 [templates]
 # defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
-defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+sync = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"
+defer = "{% for file in files %}zsh-defer -m -p -r source \"{{ file }}\"\n{% endfor %}"
 
 
 [plugins]
@@ -17,28 +18,44 @@ defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
 
+# 初回プロンプトに必要なローカル設定は同期実行する。
+[plugins.local-sync]
+local = "~/.config/sheldon/plugins/local/sync"
+use = [
+    "ssh-terminal.plugin.zsh",
+    "completion-bootstrap.plugin.zsh",
+]
+apply = ["sync"]
 
-# 2. 補完データ（辞書）の追加
+# 実行ファイルのパスは設定済みなので、環境フックは個別に遅延する。
+[plugins.local-defer]
+local = "~/.config/sheldon/plugins/local/defer"
+use = [
+    "homebrew.plugin.zsh",
+    "mise.plugin.zsh",
+    "cargo.plugin.zsh",
+    "nix.plugin.zsh",
+    "uv.plugin.zsh",
+    "fzf.plugin.zsh",
+]
+apply = ["defer"]
+
+
+# 2. 補完データ（辞書）の追加1
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
+apply = ["defer"]
 
 
 # 3. 補完システムの起動（重要：これはcompletionsの後，highlightingの前に必要）
 #    これがないと補完が動きません
 [plugins.compinit]
-inline = '''
-autoload -Uz compinit
-compinit
-
-for c in "${__compdef_queue[@]}"; do
-    [[ -n "$c" ]] || continue
-    compdef ${=c}
-done
-unset __compdef_queue
-'''
+local = "~/.config/sheldon/plugins/compinit"
+apply = ["defer"]
 
 [plugins.fzf-tab]
 github = "Aloxaf/fzf-tab"
+apply = ["defer"]
 
 [plugins.fzf-tab-config]
 inline = '''
@@ -53,6 +70,7 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 
 [plugins.ssh-host-completion]
 local = "~/.config/sheldon/plugins/ssh-host-completion"
+apply = ["defer"]
 
 # 5. オートサジェスト（入力予測）
 [plugins.zsh-autosuggestions]
@@ -101,6 +119,10 @@ apply = ["defer"]
 
 [plugins.zsh-ghq-ssh]
 local = "~/.config/sheldon/plugins/zsh-ghq-ssh"
+apply = ["defer"]
+
+[plugins.ghostty]
+local = "~/.config/sheldon/plugins/ghostty"
 apply = ["defer"]
 
 [plugins.my-function]
