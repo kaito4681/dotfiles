@@ -29,12 +29,21 @@ env:
       VISUAL: 'nvim'
 
 aliases:
+  - category: 'navigation'
+    cmds:
+      '..': 'cd ..'
+      '...': 'cd ../..'
+      '....': 'cd ../../..'
+      '.....': 'cd ../../../..'
+
   - category: 'ls'
     cmds:
-      l: 'ls'
-      ll: 'ls -l'
-      la: 'ls -a'
-      lla: 'ls -la'
+      ls: 'eza --icons=auto --group-directories-first'
+      l: 'eza -l --header --icons=auto --time-style=relative --group-directories-first'
+      ll: 'eza -l --header --icons=auto --time-style=relative --group-directories-first'
+      la: 'eza -a --icons=auto --group-directories-first'
+      lla: 'eza -la --header --icons=auto --time-style=relative --group-directories-first'
+      lt: 'eza --tree --icons=auto --group-directories-first'
 
   - category: 'git'
     cmds:
