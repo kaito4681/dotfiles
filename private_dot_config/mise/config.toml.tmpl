@@ -69,6 +69,15 @@ sheldon = "aqua:rossmacarthur/sheldon"
 # devtools
 lefthook = "aqua:evilmartians/lefthook"
 nvim = "aqua:neovim/neovim"
+{{- if eq .chezmoi.os "darwin" }}
+
+# containers
+colima = "aqua:abiosoft/colima"
+lima = "aqua:lima-vm/lima"
+docker-cli = "aqua:docker/cli"
+docker-buildx = "aqua:docker/buildx"
+docker-compose = "github:docker/compose"
+{{- end }}
 
 # tools
 chezmoi = "aqua:twpayne/chezmoi"
@@ -123,6 +132,15 @@ sheldon = "latest"
 # devtools
 lefthook = "latest"
 nvim = "latest"
+{{- if eq .chezmoi.os "darwin" }}
+
+# containers
+colima = "latest"
+lima = "latest"
+docker-cli = "latest"
+docker-buildx = "latest"
+docker-compose = "latest"
+{{- end }}
 
 # AI
 codex = "latest"
