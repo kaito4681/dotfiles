@@ -16,11 +16,16 @@ curl https://mise.run | sh
 ```bash
 ~/.local/bin/mise x chezmoi@latest -- chezmoi init --apply kaito4681
 ```
-使用する際は，`.chezmoidata/github.toml`の`username`を変更してください．
-このgithubアカウントを使って以下が設定されます．
+
+初回実行時に `Configure Git/GitHub account settings` と確認されます。
+`true`（既定値）を選ぶと、続けて入力した GitHub ユーザー名を使って以下が設定されます。
+
 - git config user.name <github username>
 - git config user.email <github private email>
+- GitHub の credential helper
 - `~/.ssh/authorized_keys`
+
+`false` を選ぶと、GitHub ユーザー名の入力を省略し、上記のアカウント関連設定を chezmoi で管理しません。Git の LFS、既定ブランチ、エイリアスなどの一般設定は引き続き適用されます。
 
 ## reference
 

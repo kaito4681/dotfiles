@@ -1,5 +1,10 @@
+{{- $configureAccount := dig "account" "configure" true . -}}
+[data.account]
+configure = {{ $configureAccount }}
+{{ if $configureAccount }}
 [data.github]
 username = {{ dig "github" "username" "kaito4681" . | quote }}
+{{ end }}
 
 [hooks.update.post]
 command = "mise"

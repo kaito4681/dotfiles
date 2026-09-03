@@ -1,5 +1,9 @@
 README.md
 .vscode
+{{- if not (dig "account" "configure" true .) }}
+.config/git/config.d/auth.conf
+.ssh/authorized_keys
+{{- end }}
 {{- if ne .chezmoi.os "darwin" }}
 .docker
 {{- end }}

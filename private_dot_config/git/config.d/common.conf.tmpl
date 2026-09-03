@@ -1,3 +1,5 @@
+{{- $configureAccount := dig "account" "configure" true . -}}
+{{- if $configureAccount -}}
 {{- $u := dig "github" "username" "kaito4681" . -}}
 {{- $ghOK := output "sh" "-c" "command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && echo true || echo false" | trim -}}
 {{- $id := "" -}}
@@ -10,6 +12,7 @@
 [user]
     name  = {{ $u }}
     email = {{ printf "%v+%s@users.noreply.github.com" $id $u }}
+{{ end }}
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f

@@ -1,5 +1,10 @@
+{{- $configureAccount := promptBoolOnce . "account.configure" "Configure Git/GitHub account settings" true -}}
+[data.account]
+configure = {{ $configureAccount }}
+{{ if $configureAccount }}
 [data.github]
 username = {{ promptStringOnce . "github.username" "GitHub username" "kaito4681" | quote }}
+{{ end }}
 
 [hooks.update.post]
 command = "sh"

@@ -1,3 +1,4 @@
+{{- $configureAccount := dig "account" "configure" true . -}}
 {{- $username := dig "github" "username" "" . -}}
 {{- $begin := "# >>> chezmoi managed: github keys >>>" -}}
 {{- $end := "# <<< chezmoi managed: github keys <<<" -}}
@@ -21,7 +22,7 @@
 {{- $unmanagedText = $unmanaged | join "\n" -}}
 {{- end -}}
 {{- $managed := list -}}
-{{- if $username -}}
+{{- if and $configureAccount $username -}}
 {{- $ghOK := output "sh" "-c" "command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 && echo true || echo false" | trim -}}
 {{- $keys := "" -}}
 {{- if eq $ghOK "true" -}}
