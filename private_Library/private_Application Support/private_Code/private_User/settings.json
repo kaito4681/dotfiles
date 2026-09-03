@@ -1,0 +1,201 @@
+{
+	// Window and workbench
+	"window.restoreWindows": "none", // 前回開いていたウィンドウを復元しない
+	"window.autoDetectColorScheme": true, // OSのライト・ダークモードを自動検出する
+	"window.confirmSaveUntitledWorkspace": false, // 未保存ワークスペースを閉じる際の確認を省略する
+	"workbench.startupEditor": "none", // 起動時にウェルカムページなどを開かない
+	"workbench.iconTheme": "vscode-icons", // ファイルアイコンにvscode-iconsを使う
+	"workbench.preferredDarkColorTheme": "Dark Modern", // OSがダークモードのときに使うテーマ
+	"workbench.secondarySideBar.defaultVisibility": "hidden", // セカンダリサイドバーを初期状態で隠す
+	"workbench.editor.empty.hint": "hidden", // 空のエディタに表示される操作ヒントを隠す
+	"update.showReleaseNotes": false, // アップデート後のリリースノートを自動表示しない
+	"extensions.experimental.affinity": {
+		"asvetliakov.vscode-neovim": 1 // VSCode Neovimを専用Extension Hostへ分離する
+	},
+
+	// Editor
+	"editor.fontSize": 15, // エディタのフォントサイズ
+	"editor.insertSpaces": false, // Tab入力時にスペースへ変換しない
+	"editor.detectIndentation": false, // ファイル内容からインデント設定を推測しない
+	"editor.defaultFormatter": "esbenp.prettier-vscode", // 標準のフォーマッターにPrettierを使う
+	"editor.formatOnSave": true, // 保存時に自動フォーマットする
+	"editor.minimap.enabled": false, // エディタ右側のミニマップを隠す
+	"editor.wordWrap": "on", // 長い行を画面幅で折り返す
+	"editor.accessibilitySupport": "off", // スクリーンリーダー向け最適化を無効にする
+	"workbench.editor.limit.enabled": true, // 開きっぱなしのエディタ数を制限する
+	"workbench.editor.limit.value": 10, // 保持するエディタを最大10件にする
+	"workbench.editor.limit.perEditorGroup": true, // エディタグループごとに上限を適用する
+	"editor.quickSuggestions": {
+		"strings": "on", // 文字列の中でも入力候補を表示する
+		"comments": "on" // コメントの中でも入力候補を表示する
+	},
+	"diffEditor.ignoreTrimWhitespace": false, // 行末空白の差分も表示する
+	"diffEditor.codeLens": true, // Diffエディタに操作リンクを表示する
+
+	// Files and explorer
+	"files.autoSave": "afterDelay", // 編集後しばらくすると自動保存する
+	"files.associations": {
+		"*.toml": "toml", // TOMLファイルとして認識する
+		"*.tmpl": "shellscript" // chezmoiテンプレートをシェルスクリプトとして認識する
+	},
+	"files.watcherExclude": {
+		"**/.venv/**": true, // Python仮想環境をファイル監視から外す
+		"**/node_modules/**": true, // Node.jsの依存パッケージをファイル監視から外す
+		"**/target/**": true, // Rustなどのビルド成果物をファイル監視から外す
+		"**/dist/**": true // 配布用の生成物をファイル監視から外す
+	},
+	"search.exclude": {
+		"**/.venv": true, // Python仮想環境を検索対象から外す
+		"**/node_modules": true, // Node.jsの依存パッケージを検索対象から外す
+		"**/target": true, // Rustなどのビルド成果物を検索対象から外す
+		"**/dist": true // 配布用の生成物を検索対象から外す
+	},
+	"explorer.compactFolders": false, // 単一の子フォルダを1行にまとめず表示する
+	"explorer.confirmDragAndDrop": false, // Explorerでのドラッグ＆ドロップ時に確認しない
+
+	// Git
+	"git.autofetch": true, // リモートの更新を定期的に取得する
+	"git.confirmSync": false, // Git Sync実行時の確認を省略する
+	"git.enableSmartCommit": false, // ステージ済み変更がない場合に全変更を自動ステージしない
+	"git.ignoreRebaseWarning": false, // Rebase時の警告を表示する
+	"git.suggestSmartCommit": false, // Smart Commitの提案を表示しない
+	"scm.defaultViewMode": "tree", // ソース管理の変更ファイルをフォルダ単位のツリーで表示する
+
+	// Terminal
+	"terminal.integrated.enableMultiLinePasteWarning": "never", // 複数行貼り付け時の警告を表示しない
+	"terminal.integrated.fontFamily": "MesloLGL Nerd Font Mono", // ターミナルで使うフォント
+	"terminal.integrated.initialHint": false, // ターミナル初回表示のヒントを隠す
+	"terminal.integrated.defaultProfile.osx": "zsh", // macOSの標準ターミナルをzshにする
+	"terminal.integrated.defaultProfile.linux": "zsh", // Linuxの標準ターミナルをzshにする
+	"terminal.integrated.profiles.osx": {
+		"bash": {
+			"path": "bash", // PATH上のbashを使う
+			"args": ["-l"], // ログインシェルとして起動する
+			"icon": "terminal-bash"
+		},
+		"zsh": {
+			"path": "/bin/zsh",
+			"args": ["-l"] // ログインシェルとして起動する
+		},
+		"fish": {
+			"path": "fish",
+			"args": ["-l"] // ログインシェルとして起動する
+		},
+		"tmux": {
+			"path": "tmux",
+			"icon": "terminal-tmux"
+		}
+	},
+	"terminal.integrated.profiles.linux": {
+		"bash": {
+			"path": "bash",
+			"icon": "terminal-bash"
+		},
+		"zsh": {
+			"path": "/usr/bin/zsh"
+		},
+		"fish": {
+			"path": "fish"
+		},
+		"tmux": {
+			"path": "tmux",
+			"icon": "terminal-tmux"
+		}
+	},
+
+	// Tasks
+	"task.problemMatchers.neverPrompt": {
+		"shell": true // shellのProblem Matcher選択を毎回確認しない
+	},
+
+	// Language-specific formatters
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features" // JavaScriptはVS Code標準機能で整形する
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features" // TypeScriptはVS Code標準機能で整形する
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode" // TSXはPrettierで整形する
+	},
+	"[json,jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features" // JSONとJSONCはVS Code標準機能で整形する
+	},
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features" // HTMLはVS Code標準機能で整形する
+	},
+	"[css]": {
+		"editor.defaultFormatter": "vscode.css-language-features" // CSSはVS Code標準機能で整形する
+	},
+	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode", // MarkdownはPrettierで整形する
+		"diffEditor.ignoreTrimWhitespace": true // Markdownでは行末空白の差分を無視する
+	},
+	"[python]": {
+		"editor.defaultFormatter": "charliermarsh.ruff", // PythonはRuffで整形する
+		"editor.codeActionsOnSave": {
+			"source.fixAll.ruff": "explicit", // 明示的な保存時にRuffの自動修正を実行する
+			"source.organizeImports.ruff": "explicit" // 明示的な保存時にimportを整理する
+		},
+		"editor.insertSpaces": true, // PythonではTabをスペースに変換する
+		"editor.tabSize": 4, // Pythonのインデント幅を4にする
+		"diffEditor.ignoreTrimWhitespace": true // Pythonでは空白だけの差分を無視する
+	},
+	"[toml]": {
+		"editor.defaultFormatter": "tamasfe.even-better-toml" // TOMLはEven Better TOMLで整形する
+	},
+	"[typst]": {
+		"editor.defaultFormatter": "myriad-dreamin.tinymist" // TypstはTinymistで整形する
+	},
+	"[latex]": {
+		"editor.defaultFormatter": "James-Yu.latex-workshop" // LaTeXはLaTeX Workshopで整形する
+	},
+	"[bibtex]": {
+		"editor.defaultFormatter": "James-Yu.latex-workshop" // BibTeXはLaTeX Workshopで整形する
+	},
+	"[dockercompose]": {
+		"editor.defaultFormatter": "redhat.vscode-yaml", // ComposeファイルはYAML拡張で整形する
+		"editor.insertSpaces": true, // インデントにスペースを使う
+		"editor.tabSize": 2, // インデント幅を2にする
+		"editor.autoIndent": "advanced", // 言語構造に基づいて自動インデントする
+		"editor.quickSuggestions": {
+			"other": true,
+			"comments": false,
+			"strings": true
+		}
+	},
+	"[github-actions-workflow]": {
+		"editor.defaultFormatter": "redhat.vscode-yaml" // GitHub ActionsはYAML拡張で整形する
+	},
+	"[snippets]": {
+		"editor.defaultFormatter": "vscode.json-language-features" // スニペット定義はVS Code標準機能で整形する
+	},
+
+	// Extensions
+	"vscode-neovim.neovimExecutablePaths.darwin": "~/.local/share/mise/installs/nvim/latest/nvim-macos-arm64/bin/nvim", // vscode-neovimでmiseの最新版Neovimを使う
+	"docker.extension.enableComposeLanguageServer": false, // Docker拡張のCompose Language Serverを無効にする
+	"latex-workshop.intellisense.package.enabled": true, // LaTeXパッケージ由来の入力補完を有効にする
+	"latex-workshop.formatting.latex": "latexindent", // LaTeXの整形にlatexindentを使う
+	"latex-workshop.latex.outDir": "latex-output", // LaTeXの生成物をlatex-outputへ出力する
+	"latex-workshop.latex.recipes": [
+		{
+			"name": "latexmk", // ビルドレシピ名
+			"tools": ["latexmk"] // latexmkツールを実行する
+		}
+	],
+	"latex-workshop.latex.tools": [
+		{
+			"name": "latexmk", // レシピから参照するツール名
+			"command": "latexmk", // 実行するコマンド
+			"args": [
+				"-silent", // 通常ログを抑制する
+				"-outdir=%OUTDIR%", // 上で指定した出力先を使う
+				"%DOC%" // 現在のLaTeX文書をビルドする
+			]
+		}
+	],
+
+	// Privacy
+	"chat.disableAIFeatures": true, // VS Code組み込みのAI機能を無効にする
+	"extensions.ignoreRecommendations": true // 拡張機能のおすすめ通知を表示しない
+}

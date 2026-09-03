@@ -1,0 +1,64 @@
+[
+	// Explorer
+	{
+		"key": "cmd+alt+n",
+		"command": "explorer.newFile"
+	},
+	{
+		"key": "cmd+alt+ctrl+n",
+		"command": "explorer.newFolder"
+	},
+	// Focus
+	{
+		"key": "cmd+.",
+		"command": "workbench.action.terminal.focus",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "cmd+.",
+		"command": "workbench.action.focusFirstEditorGroup",
+		"when": "!editorTextFocus"
+	},
+
+	// Editing
+	{
+		"key": "shift+3",
+		"command": "type",
+		"args": {
+			"text": "#"
+		},
+		"when": "editorTextFocus && editorLangId == markdown"
+	},
+	{
+		"key": "cmd+/",
+		"command": "-notebook.commentSelectedCells",
+		"when": "notebookEditable && notebookEditorFocused && !inputFocus"
+	},
+	{
+		"key": "cmd+/",
+		"command": "editor.action.commentLine",
+		"when": "editorTextFocus && !editorReadonly"
+	},
+	{
+		"key": "cmd+/",
+		"command": "-editor.action.commentLine",
+		"when": "editorTextFocus && !editorReadonly"
+	},
+	{
+		"key": "cmd+i",
+		"command": "editor.action.triggerSuggest",
+		"when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
+	},
+	{
+		"key": "cmd+i",
+		"command": "-editor.action.triggerSuggest",
+		"when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
+	},
+
+	// Typst
+	{
+		"key": "cmd+k v",
+		"command": "-typst-preview.preview",
+		"when": "editorLangId == 'typst'"
+	}
+]
