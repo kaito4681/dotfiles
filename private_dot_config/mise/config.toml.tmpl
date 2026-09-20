@@ -63,10 +63,12 @@ docling = "pipx:docling"
 pymupdf = "pipx:pymupdf"
 
 # shell
+direnv = "aqua:direnv/direnv"
 starship = "aqua:starship/starship"
 sheldon = "aqua:rossmacarthur/sheldon"
 
 # devtools
+just = "aqua:casey/just"
 lefthook = "aqua:evilmartians/lefthook"
 nvim = "aqua:neovim/neovim"
 {{- if eq .chezmoi.os "darwin" }}
@@ -126,10 +128,12 @@ ty = "latest"
 pytest = "latest"
 
 # shell
+direnv = "latest"
 starship = "latest"
 sheldon = "latest"
 
 # devtools
+just = "latest"
 lefthook = "latest"
 nvim = "latest"
 {{- if eq .chezmoi.os "darwin" }}
@@ -168,13 +172,17 @@ fd = "latest"
 [tasks.update]
 description = "Update mise tools"
 run = [
-	"mise run update:mise ::: update:uv ::: update:sheldon",
+	"mise run update:brew ::: update:mise ::: update:uv ::: update:sheldon ::: update:nix",
 ]
 
 {{- if eq .chezmoi.os "darwin" }}
 [tasks."update:brew"]
 run = ["brew update", "brew upgrade", "brew cleanup"]
 {{- end }}
+
+[tasks."update:nix"]
+description = "Update Nix"
+run = "sudo -i nix upgrade-nix"
 
 
 [tasks."update:mise"]

@@ -22,9 +22,9 @@ github = "romkatv/zsh-defer"
 [plugins.local-sync]
 local = "~/.config/sheldon/plugins/local/sync"
 use = [
-    "ssh-terminal.plugin.zsh",
-    "completion-bootstrap.plugin.zsh",
-    "chezmoi.plugin.zsh",
+	"ssh-terminal.plugin.zsh",
+	"completion-bootstrap.plugin.zsh",
+	"chezmoi.plugin.zsh",
 ]
 apply = ["sync"]
 
@@ -32,13 +32,15 @@ apply = ["sync"]
 [plugins.local-defer]
 local = "~/.config/sheldon/plugins/local/defer"
 use = [
-    "homebrew.plugin.zsh",
-    "mise.plugin.zsh",
-    "cargo.plugin.zsh",
-    "nix.plugin.zsh",
-    "uv.plugin.zsh",
-    "fzf.plugin.zsh",
-    "zoxide.plugin.zsh",
+	"homebrew.plugin.zsh",
+	"mise.plugin.zsh",
+	"direnv.plugin.zsh",
+	"just.plugin.zsh",
+	"cargo.plugin.zsh",
+	"nix.plugin.zsh",
+	"uv.plugin.zsh",
+	"fzf.plugin.zsh",
+	"zoxide.plugin.zsh",
 ]
 apply = ["defer"]
 
