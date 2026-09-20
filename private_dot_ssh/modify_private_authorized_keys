@@ -1,0 +1,14 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $begin := "# >>> chezmoi managed: github keys >>>" -}}
+{{- $end := "# <<< chezmoi managed: github keys <<<" -}}
+{{- $managed := printf "%s\n" $begin -}}
+{{- range gitHubKeys .github.username -}}
+{{- $managed = printf "%s%s\n" $managed (toString .Key) -}}
+{{- end -}}
+{{- $managed = printf "%s%s\n" $managed $end -}}
+{{- $pattern := printf `(?s)%s.*?%s\n?` $begin $end -}}
+{{- if regexMatch $pattern .chezmoi.stdin -}}
+{{- .chezmoi.stdin | replaceAllRegex $pattern ($managed | replace "$" "$$") -}}
+{{- else -}}
+{{- printf "%s%s%s" .chezmoi.stdin (ternary "" "\n" (or (not .chezmoi.stdin) (hasSuffix "\n" .chezmoi.stdin))) $managed -}}
+{{- end -}}
