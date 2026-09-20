@@ -1,3 +1,5 @@
+# ~/.config/zsh/zshrc
+
 # ==================== Envs ====================
 {{- range .env }}
 {{- $vars := .vars }}
@@ -51,7 +53,7 @@ bindkey -e
 
 # 最初のプロンプトに必要な処理だけを同期読み込みする。
 export SHELDON_CONFIG_DIR="$HOME/.config/sheldon"
-typeset -r ZSH_DEFER_PLUGIN="${XDG_DATA_HOME:-$HOME/.local/share}/sheldon/repos/github.com/romkatv/zsh-defer/zsh-defer.plugin.zsh"
+export ZSH_DEFER_PLUGIN="${XDG_DATA_HOME:-$HOME/.local/share}/sheldon/repos/github.com/romkatv/zsh-defer/zsh-defer.plugin.zsh"
 
 if [[ -r "$ZSH_DEFER_PLUGIN" ]]; then
     source "$ZSH_DEFER_PLUGIN"

@@ -1,0 +1,22 @@
+# chezmoi:modify-template
+
+{{- $startMarker := `# >>> chezmoi managed: bashrc >>>` -}}
+{{- $endMarker := `# <<< chezmoi managed: bashrc <<<` -}}
+
+{{- $managed := printf `
+%s
+if [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/bash/bashrc" ]]; then
+    source "${XDG_CONFIG_HOME:-$HOME/.config}/bash/bashrc"
+fi
+%s
+` $startMarker $endMarker | trimPrefix "\n" -}}
+
+{{- $managedBlock := printf `(?ms)^%s\n.*?^%s\n?` (regexQuoteMeta $startMarker) (regexQuoteMeta $endMarker) -}}
+
+{{- if regexMatch $managedBlock .chezmoi.stdin -}}
+{{- .chezmoi.stdin | replaceAllRegex $managedBlock ($managed | replace "$" "$$") -}}
+{{- else if .chezmoi.stdin -}}
+{{- printf "%s\n\n%s" (.chezmoi.stdin | trimSuffix "\n") $managed -}}
+{{- else -}}
+{{- $managed -}}
+{{- end -}}
