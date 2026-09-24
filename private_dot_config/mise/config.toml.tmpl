@@ -173,7 +173,11 @@ fd = "latest"
 [tasks.update]
 description = "Update mise tools"
 run = [
+	{{- if eq .chezmoi.os "darwin" }}
 	"mise run update:brew ::: update:mise ::: update:uv ::: update:sheldon ::: update:nix",
+	{{- else }}
+	"mise run update:mise ::: update:uv ::: update:sheldon ::: update:nix",
+	{{- end }}
 ]
 
 {{- if eq .chezmoi.os "darwin" }}
