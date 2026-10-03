@@ -17,6 +17,12 @@ export {{ printf . }}="{{ index $vars . }}"
 {{- end }}
 
 
+# ==================== History ====================
+
+HISTFILE="$XDG_STATE_HOME/bash/history"
+mkdir -p "$(dirname "$HISTFILE")"
+
+
 # ==================== Paths ====================
 
 # --- all paths ---
