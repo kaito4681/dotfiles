@@ -27,9 +27,6 @@ quick-terminal-screen = macos-menu-bar
 quick-terminal-animation-duration = 0
 
 # Keybind
-# keybind = global:super+shift+space=toggle_quick_terminal
-keybind = global:cmd+shift+space=toggle_visibility
-# keybind = global:super+space=toggle_window_float_on_top
 macos-option-as-alt = true
 
 keybind = ctrl+a=unbind
