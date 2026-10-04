@@ -6,15 +6,15 @@ local function basename(path)
   return path and path:match('([^/]+)$')
 end
 
--- `ssh -p 2222 myserver ls` -> `myserver`
-local function sshDestination(argv)
+-- `ssh -p 2222 myserver ls` -> 4 (the index of `myserver`)
+local function destinationIndex(argv)
   local i = 2
   while i <= #argv do
     local arg = argv[i]
     if arg == '--' then
-      return argv[i + 1]
+      return i + 1
     elseif arg:sub(1, 1) ~= '-' then
-      return arg
+      return i
     end
     for j = 2, #arg do
       if sshOptionsWithArgument:find(arg:sub(j, j), 1, true) then
@@ -70,7 +70,11 @@ local function tmuxActivePanePID(pane, client)
   end
 end
 
-local function detectHost(pane)
+local M = {}
+
+-- Return the destination and the ssh command up to it, e.g.
+-- `myserver`, { '/usr/bin/ssh', '-p', '2222', 'myserver' }.
+function M.detect(pane)
   local info = pane:get_foreground_process_info()
   if not info then
     return nil
@@ -80,42 +84,15 @@ local function detectHost(pane)
     local pid = tmuxActivePanePID(pane, info)
     ssh = pid and findSSH(wezterm.procinfo.get_info_for_pid(pid))
   end
-  return ssh and sshDestination(ssh.argv)
-end
-
-local M = {}
-
-function M.apply_to_config(_config)
-  local lastRequestID
-
-  -- Open a path sent by the remote `code` function via Remote - SSH.
-  wezterm.on('user-var-changed', function(window, pane, name, value)
-    if name ~= 'OPEN_VSCODE' or value == '' then
-      return
-    end
-    local id, host, path = value:match('^(%w+)\t([^\t\r\n]*)\t(/[^\t\r\n]*)$')
-    if not id then
-      wezterm.log_error('Invalid OPEN_VSCODE request')
-      return
-    end
-    -- Ignore copies sent for other tmux nesting levels.
-    if id == lastRequestID then
-      return
-    end
-    lastRequestID = id
-
-    if host == '' then
-      host = detectHost(pane)
-    end
-    if not host or not host:match('^[%w_][%w_.@:+%-]*$') then
-      wezterm.log_error('OPEN_VSCODE: could not determine the SSH host')
-      return
-    end
-    local cli = '/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'
-    wezterm.background_child_process {
-      cli, '--remote', 'ssh-remote+' .. host, '--', path,
-    }
-  end)
+  local i = ssh and destinationIndex(ssh.argv)
+  if not i or not ssh.argv[i] then
+    return nil
+  end
+  local command = { ssh.executable }
+  for j = 2, i do
+    table.insert(command, ssh.argv[j])
+  end
+  return ssh.argv[i], command
 end
 
 return M
