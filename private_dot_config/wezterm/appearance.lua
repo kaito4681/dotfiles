@@ -18,15 +18,31 @@ function M.apply_to_config(config)
     },
   }
 
-  local fonts = {
-    { family = 'JetBrains Mono', weight = 'Medium' },
-    'Symbols Nerd Font Mono',
-  }
-
-  if wezterm.target_triple:find('apple') then
-    table.insert(fonts, { family = 'Hiragino Sans', weight = 'Medium' })
+  local function fonts(weight, ja_weight)
+    local list = {
+      { family = 'JetBrains Mono', weight = weight },
+      'Symbols Nerd Font Mono',
+    }
+    if wezterm.target_triple:find('apple') then
+      table.insert(list, { family = 'Hiragino Sans', weight = ja_weight or weight })
+    end
+    return list
   end
-  config.font = wezterm.font_with_fallback(fonts)
+
+  config.font = wezterm.font_with_fallback(fonts('Regular'))
+  -- The default bold weight (ExtraBold) is too heavy.
+  config.font_rules = {
+    {
+      intensity = 'Bold',
+      italic = false,
+      font = wezterm.font_with_fallback(fonts('Bold', 'DemiBold')),
+    },
+    {
+      intensity = 'Bold',
+      italic = true,
+      font = wezterm.font_with_fallback(fonts('Bold', 'DemiBold'), { italic = true }),
+    },
+  }
   config.font_size = 18
   config.window_background_opacity = 0.75
   config.window_padding = {
