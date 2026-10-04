@@ -3,9 +3,78 @@
 # Store script path at source time for reload to work
 __GHQ_SSH_PLUGIN_PATH="${0:A}"
 
+# Print "<last edit time>\t<path>" per repository (also sent to remote hosts; no single quotes)
+__GHQ_SSH_LIST_SCRIPT='
+use strict;
+use warnings;
+
+my $ghq = shift // q{ghq};
+open my $list, q{-|}, $ghq, qw(list --full-path) or exit 1;
+chomp(my @repos = <$list>);
+close $list;
+exit 0 unless @repos;
+
+my %is_repo = map { $_ => 1 } @repos;
+my %mtime;
+sub newer {
+    my ($repo, $file) = @_;
+    my $m = (lstat $file)[9] // return;
+    $mtime{$repo} = $m if $m > ($mtime{$repo} // 0);
+}
+
+local $/ = qq{\0};
+if (grep { -x qq{$_/rg} } split /:/, $ENV{PATH} // q{}) {
+    open my $rg, q{-|}, qw(rg --files --hidden -g !.git -0 --), @repos or exit 1;
+    while (my $file = <$rg>) {
+        chomp $file;
+        # Find the repository the file belongs to
+        my $dir = $file;
+        while ($dir =~ s{/[^/]*\z}{} && length $dir) {
+            if ($is_repo{$dir}) { newer($dir, $file); last }
+        }
+    }
+} else {
+    for my $repo (@repos) {
+        open my $git, q{-|}, qw(git -C), $repo, qw(ls-files -z --cached --others --exclude-standard) or next;
+        while (my $file = <$git>) { chomp $file; newer($repo, qq{$repo/$file}) }
+    }
+}
+
+print +($mtime{$_} // 0), qq{\t$_\n} for @repos;
+'
+
+# Sort by edit time (newest first) and add the date column for fzf
+__ghq_format() {
+    emulate -L zsh
+    zmodload -F zsh/datetime b:strftime p:EPOCHSECONDS
+
+    local type host epoch repo when rel display
+    local -i diff
+    sort -t $'\t' -k3,3nr | while IFS=$'\t' read -r type host epoch repo; do
+        if (( epoch > 0 )); then
+            strftime -s when '%Y-%m-%d %H:%M' "$epoch"
+            diff=$(( EPOCHSECONDS - epoch ))
+            if   (( diff < 60 ));       then rel="just now"
+            elif (( diff < 3600 ));     then rel="$(( diff / 60 ))m ago"
+            elif (( diff < 86400 ));    then rel="$(( diff / 3600 ))h ago"
+            elif (( diff < 2592000 ));  then rel="$(( diff / 86400 ))d ago"
+            elif (( diff < 31536000 )); then rel="$(( diff / 2592000 ))mo ago"
+            else                             rel="$(( diff / 31536000 ))y ago"
+            fi
+        else
+            when="----------------"
+            rel="-"
+        fi
+        rel="${(r:10:)rel}"
+        display="${repo/#$HOME/~}"
+        [[ "$type" == remote ]] && display="$host:$repo"
+        print -r -- "$type"$'\t'"$host"$'\t'"$repo"$'\t'$'\e[90m'"$when $rel"$'\e[0m'$'\t'"$display"
+    done
+}
+
 # Search local ghq repositories
 __ghq_search_local() {
-    ghq list --full-path | sed 's|^|local:|'
+    print -r -- "$__GHQ_SSH_LIST_SCRIPT" | perl - ghq 2>/dev/null | sed $'s/^/local\t-\t/' | __ghq_format
 }
 
 # Resolve remote hosts from GHQ_REMOTE_HOSTS or SSH completion aliases.
@@ -31,10 +100,11 @@ __ghq_search_remote() {
     hosts=("${(@f)$(__ghq_remote_hosts)}")
 
     if (( ! $#hosts )) || [[ "${hosts[1]}" == error:* ]]; then
-        echo "error:GHQ_REMOTE_HOSTS_not_set"
+        print -r -- $'error\t-\t-\t\t\e[31mGHQ_REMOTE_HOSTS is not set\e[0m'
         return
     fi
 
+    {
     local pids=()
     local host
     for host in "${hosts[@]}"; do
@@ -46,10 +116,11 @@ __ghq_search_remote() {
         elif [[ "$normalized_var_name" != "$var_name" && -n "${(P)normalized_var_name}" ]]; then
             ghq_path="${(P)normalized_var_name}"
         fi
-        ssh -q "$host" "$ghq_path list --full-path" 2>/dev/null | sed "s|^|remote:$host:|" &
+        print -r -- "$__GHQ_SSH_LIST_SCRIPT" | ssh -q "$host" perl - "$ghq_path" 2>/dev/null | sed $'s/^/remote\t'"$host"$'\t/' &
         pids+=($!)
     done
     wait "${pids[@]}" 2>/dev/null
+    } | __ghq_format
 }
 
 # Main search function
@@ -62,8 +133,10 @@ __ghq_search() {
     local fzf_out
     fzf_out=$(__ghq_search_local | fzf \
         --ansi \
-        --delimiter : \
-        --with-nth 2.. \
+        --delimiter '\t' \
+        --with-nth 4,5 \
+        --nth 2 \
+        --tiebreak index \
         --prompt="[Local] > " \
         --header="ctrl+R: to Remote SSH	| alt+ENTER: Open in VSCode" \
         --expect=alt-enter \
@@ -87,32 +160,27 @@ __ghq_search() {
         result="${lines[1]}"
     fi
 
-    local type="${result%%:*}"
+    local type host repo rest
+    IFS=$'\t' read -r type host repo rest <<< "$result"
 
     if [[ "$type" == "local" ]]; then
-        local path="${result#*:}"
-        
         if [[ "$key_pressed" == "alt-enter" ]]; then
             # vscode
-            code -n "$path"
+            code -n "$repo"
         else
             # cd
-            cd "$path"
+            cd "$repo"
         fi
     
     elif [[ "$type" == "remote" ]]; then
-        local rest="${result#remote:}"
-        local host="${rest%%:*}"
-        local path="${rest#*:}"
-        
         if [[ "$key_pressed" == "alt-enter" ]]; then
             # vscode remote
             echo "Opening in VS Code Remote..."
-            code --folder-uri "vscode-remote://ssh-remote+$host$path"
+            code --folder-uri "vscode-remote://ssh-remote+$host$repo"
         else
             # ssh
             echo "Connecting to $host..."
-            ssh -t "$host" "cd '$path' && exec \$SHELL -l"
+            ssh -t "$host" "cd '$repo' && exec \$SHELL -l"
         fi
         
     elif [[ "$type" == "error" ]]; then
