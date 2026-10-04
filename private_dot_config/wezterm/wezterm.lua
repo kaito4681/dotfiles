@@ -9,6 +9,7 @@ require('keys').apply_to_config(config)
 if wezterm.target_triple:find('apple') then
   require('macos').apply_to_config(config)
   require('quit').apply_to_config(config)
+  require('vscode').apply_to_config(config)
 end
 
 return config
