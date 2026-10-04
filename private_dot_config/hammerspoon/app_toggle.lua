@@ -5,8 +5,12 @@ local function launch(bundleID)
   local startedAt = hs.timer.absoluteTime()
   launchTimers[bundleID] = hs.timer.doEvery(0.1, function()
     local app = hs.application.get(bundleID)
-    if (app and app:mainWindow())
-      or hs.timer.absoluteTime() - startedAt >= 30 * 1e9 then
+    local win = app and app:mainWindow()
+    if win then
+      -- Fill the screen when the application opens.
+      win:maximize(0)
+    end
+    if win or hs.timer.absoluteTime() - startedAt >= 30 * 1e9 then
       launchTimers[bundleID]:stop()
       launchTimers[bundleID] = nil
     end
