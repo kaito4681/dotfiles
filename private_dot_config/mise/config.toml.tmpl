@@ -148,7 +148,9 @@ docker-compose = "latest"
 {{- end }}
 
 # AI
+{{- if eq .chezmoi.os "darwin" }}
 codex = "latest"
+{{- end }}
 "npm:skills" = "latest"
 
 # tools
