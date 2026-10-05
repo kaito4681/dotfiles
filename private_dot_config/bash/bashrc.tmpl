@@ -51,6 +51,28 @@ alias {{ . }}='{{ index $cmds . }}'
 {{- end }}
 {{- end }}
 
+{{- if eq .chezmoi.os "linux" }}
+{{- range .aliases_linux }}
+{{- $cmds := .cmds }}
+
+# --- {{ .category }}(Linux) ---
+{{- range sortAlpha (keys $cmds) }}
+alias {{ . }}='{{ index $cmds . }}'
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+{{- range .functions_linux }}
+
+# --- {{ .category }}(Linux) ---
+{{- $cmds := .cmds }}
+{{- range sortAlpha (keys $cmds) }}
+{{ index $cmds . }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- if lookPath "nvidia-smi" }}
 
 # --- nvidia-smi ---
