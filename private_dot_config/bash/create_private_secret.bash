@@ -1,0 +1,1 @@
+# ~/.config/bash/secret.bash

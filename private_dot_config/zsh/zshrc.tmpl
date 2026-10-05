@@ -10,6 +10,9 @@ export {{ printf . }}="{{ index $vars . }}"
 {{- end -}}
 {{- end }}
 
+# --- secrets ---
+[[ -r "$HOME/.config/zsh/secret.zsh" ]] && source "$HOME/.config/zsh/secret.zsh"
+
 
 # ==================== History ====================
 

@@ -1,0 +1,1 @@
+# ~/.config/zsh/secret.zsh

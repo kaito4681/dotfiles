@@ -16,6 +16,9 @@ export {{ printf . }}="{{ index $vars . }}"
 {{- end }}
 {{- end }}
 
+# --- secrets ---
+[[ -r "$HOME/.config/bash/secret.bash" ]] && source "$HOME/.config/bash/secret.bash"
+
 
 # ==================== History ====================
 
