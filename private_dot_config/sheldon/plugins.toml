@@ -89,6 +89,12 @@ github = "olets/zsh-abbr"
 use = ["{{ name }}.zsh"]
 apply = ["defer"]
 
+# git の alias を g 付きの abbr に
+[plugins.zsh-abbr-git-aliases]
+inline = '''
+zsh-defer -c 'abbr import-git-aliases --session --prefix g --quiet'
+'''
+
 # 7. シンタックスハイライト（必ず最後に記述）
 [plugins.fast-syntax-highlighting]
 github = "zdharma-continuum/fast-syntax-highlighting"
@@ -108,6 +114,24 @@ FAST_HIGHLIGHT_STYLES[unknown-token]='fg=red,bold'
 FAST_HIGHLIGHT_STYLES[double-quoted-argument]='fg=yellow'
 FAST_HIGHLIGHT_STYLES[single-quoted-argument]='fg=yellow'
 FAST_HIGHLIGHT_STYLES[path]='underline'
+'''
+
+# zsh-abbr の省略形を alias と同じ色に
+[plugins.fast-syntax-highlighting-abbr]
+inline = '''
+_fsh_abbr_patch() {
+    (( $+functions[-fast-highlight-main-type] )) || return
+    functions[-fast-highlight-main-type-orig]=$functions[-fast-highlight-main-type]
+    -fast-highlight-main-type() {
+        -fast-highlight-main-type-orig "$@"
+        [[ $REPLY == none ]] || return 0
+        local key=${(qqq)1}
+        (( ${+ABBR_REGULAR_SESSION_ABBREVIATIONS[(e)$key]} || ${+ABBR_REGULAR_USER_ABBREVIATIONS[(e)$key]} )) && REPLY=alias
+        return 0
+    }
+    unfunction _fsh_abbr_patch
+}
+zsh-defer _fsh_abbr_patch
 '''
 
 [plugins.benchmark]

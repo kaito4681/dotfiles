@@ -54,10 +54,6 @@ aliases:
   - category: 'git'
     cmds:
       g: 'git'
-      gp: 'git pull'
-      gc: 'git commit'
-      gca: 'git commit --amend'
-      gcan: 'git commit --amend --no-edit'
       gci: 'mkdir -p .github;touch .github/copilot-instructions.md'
 
   - category: 'bun'
