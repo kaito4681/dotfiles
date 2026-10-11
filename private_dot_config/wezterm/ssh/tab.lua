@@ -1,5 +1,6 @@
 local wezterm = require 'wezterm'
 local ssh = require 'ssh.detect'
+local directory = require 'ssh.directory'
 
 local function shellQuote(s)
   return "'" .. s:gsub("'", [['\'']]) .. "'"
@@ -14,11 +15,9 @@ local spawnTab = wezterm.action_callback(function(window, pane)
     window:perform_action(wezterm.action.SpawnTab 'CurrentPaneDomain', pane)
     return
   end
-  local cwd = pane:get_current_working_dir()
-  local remoteCommand = 'exec "$SHELL" -l'
-  if cwd and cwd.host ~= wezterm.hostname() and cwd.file_path ~= '' then
-    remoteCommand = 'cd ' .. shellQuote(cwd.file_path) .. ' 2>/dev/null; ' .. remoteCommand
-  end
+  -- Look up the directory on the new connection instead of a separate one.
+  local remoteCommand = 'cd "$(' .. directory.script .. ')" 2>/dev/null; exec "$SHELL" -l'
+  command = directory.shareConnection(command)
   table.insert(command, 2, '-t')
   table.insert(command, remoteCommand)
   local quoted = {}
