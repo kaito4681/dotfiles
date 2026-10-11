@@ -82,6 +82,12 @@ github = "zsh-users/zsh-autosuggestions"
 use = ["{{ name }}.zsh"]
 apply = ["defer"]
 
+# herdr の中では非同期で候補を取ると、入力のたびに候補が一瞬消えてチラつくので同期で取る
+[plugins.zsh-autosuggestions-config]
+inline = '''
+[[ -n $HERDR_ENV ]] && zsh-defer -c 'unset ZSH_AUTOSUGGEST_USE_ASYNC'
+'''
+
 
 # 6. Abbr（展開エイリアス）
 [plugins.zsh-abbr]
