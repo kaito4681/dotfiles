@@ -6,18 +6,24 @@ local function basename(path)
   return path and path:match('([^/]+)$')
 end
 
--- `ssh -p 2222 myserver ls` -> 4 (the index of `myserver`)
+-- `ssh -p 2222 myserver ls` -> 4 (the index of `myserver`), and whether -T
+-- disables the tty, as in background connections such as herdr's.
 local function destinationIndex(argv)
   local i = 2
+  local noTTY = false
   while i <= #argv do
     local arg = argv[i]
     if arg == '--' then
-      return i + 1
+      return i + 1, noTTY
     elseif arg:sub(1, 1) ~= '-' then
-      return i
+      return i, noTTY
     end
     for j = 2, #arg do
-      if sshOptionsWithArgument:find(arg:sub(j, j), 1, true) then
+      local option = arg:sub(j, j)
+      if option == 'T' then
+        noTTY = true
+      end
+      if sshOptionsWithArgument:find(option, 1, true) then
         if j == #arg then
           i = i + 1
         end
@@ -32,7 +38,7 @@ local function findSSH(info)
   if not info then
     return nil
   end
-  if basename(info.executable) == 'ssh' then
+  if basename(info.executable) == 'ssh' and not select(2, destinationIndex(info.argv)) then
     return info
   end
   for _, child in pairs(info.children or {}) do
