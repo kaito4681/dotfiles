@@ -76,6 +76,44 @@ local function tmuxActivePanePID(pane, client)
   end
 end
 
+-- With a local herdr, ssh runs in the focused pane of the herdr server.
+local function herdrFocusedPanePID(client)
+  local function query(...)
+    local ok, stdout = wezterm.run_child_process { client.executable, ... }
+    local parsed = ok and wezterm.json_parse(stdout)
+    return parsed and parsed.result
+  end
+  local list = query('pane', 'list')
+  for _, herdrPane in ipairs(list and list.panes or {}) do
+    if herdrPane.focused then
+      local result = query('pane', 'process-info', '--pane', herdrPane.pane_id)
+      return result and result.process_info and result.process_info.shell_pid
+    end
+  end
+end
+
+-- herdr titles the window "<server hostname>: <workspace>". When it shows a
+-- remote machine, the panes run there and herdr reaches it through its own
+-- background ssh, whose destination is a plain ssh destination.
+local function herdrRemoteSSH(pane, client)
+  local shown = pane:get_title():match('^([^:]+): ')
+  local hostname = wezterm.hostname()
+  if not shown or shown == hostname or shown == hostname:match('^[^.]+') then
+    return nil
+  end
+  local found
+  for _, child in pairs(client.children or {}) do
+    local i = basename(child.executable) == 'ssh' and destinationIndex(child.argv)
+    if i and child.argv[i] then
+      found = { child.argv[i], child.executable }
+      if child.argv[i] == shown then
+        break
+      end
+    end
+  end
+  return found
+end
+
 local M = {}
 
 -- Return the destination and the ssh command up to it, e.g.
@@ -86,8 +124,16 @@ function M.detect(pane)
     return nil
   end
   local ssh = findSSH(info)
-  if not ssh and basename(info.executable) == 'tmux' then
-    local pid = tmuxActivePanePID(pane, info)
+  local client = basename(info.executable)
+  if not ssh and client == 'herdr' then
+    local remote = herdrRemoteSSH(pane, info)
+    if remote then
+      return remote[1], { remote[2], remote[1] }
+    end
+  end
+  if not ssh then
+    local pid = client == 'tmux' and tmuxActivePanePID(pane, info)
+      or client == 'herdr' and herdrFocusedPanePID(info)
     ssh = pid and findSSH(wezterm.procinfo.get_info_for_pid(pid))
   end
   local i = ssh and destinationIndex(ssh.argv)
