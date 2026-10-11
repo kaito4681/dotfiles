@@ -28,6 +28,8 @@ credential_command = "gh auth token"
 "brew:tcl-tk@8" = "latest"
 "brew:xz" = "latest"
 "brew:zlib" = "latest"
+# WezTerm のフォント
+"brew-cask:font-udev-gothic-nf" = "latest"
 {{- else if eq .chezmoi.os "linux" }}
 {{- if or (eq .chezmoi.osRelease.id "debian") (contains "debian" (.chezmoi.osRelease.idLike | default "")) }}
 # Debian / Ubuntu
