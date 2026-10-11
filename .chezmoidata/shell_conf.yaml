@@ -64,6 +64,10 @@ aliases:
       bs: 'bun start'
       bbs: 'bun run build && bun start'
 
+  - category: 'herdr'
+    cmds:
+      h: 'herdr'
+
   - category: 'sudocode'
     cmds:
       sudocode: 'SUDO_EDITOR="$(which code) --wait" sudoedit'
