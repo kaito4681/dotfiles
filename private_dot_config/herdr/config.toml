@@ -1,0 +1,21 @@
+onboarding = false
+
+[ui.toast]
+delivery = "herdr"
+
+[ui.sound]
+enabled = false
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+status_indicators = "symbols"
+[theme]
+name = "tokyo-night"
+auto_switch = false
+
+[theme.custom]
+surface_dim = "#565f89" # サイドバーとペインの境界線
+
+[keys]
+detach = "prefix+d"
