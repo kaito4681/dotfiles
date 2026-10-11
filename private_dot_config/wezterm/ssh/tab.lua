@@ -6,6 +6,8 @@ local function shellQuote(s)
 end
 
 -- While connected over SSH, open the new tab on the same host and directory.
+-- ssh runs inside a local shell, so leaving it (e.g. Ctrl+D) drops back to a
+-- local shell instead of closing the tab.
 local spawnTab = wezterm.action_callback(function(window, pane)
   local _, command = ssh.detect(pane)
   if not command then
@@ -19,7 +21,14 @@ local spawnTab = wezterm.action_callback(function(window, pane)
   end
   table.insert(command, 2, '-t')
   table.insert(command, remoteCommand)
-  window:perform_action(wezterm.action.SpawnCommandInNewTab { args = command }, pane)
+  local quoted = {}
+  for _, arg in ipairs(command) do
+    table.insert(quoted, shellQuote(arg))
+  end
+  local shell = os.getenv('SHELL') or '/bin/zsh'
+  window:perform_action(wezterm.action.SpawnCommandInNewTab {
+    args = { shell, '-lc', table.concat(quoted, ' ') .. '; exec "$SHELL" -l' },
+  }, pane)
 end)
 
 local M = {}
