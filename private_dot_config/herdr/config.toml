@@ -19,3 +19,5 @@ surface_dim = "#565f89" # サイドバーとペインの境界線
 
 [keys]
 detach = "prefix+d"
+# WezTerm の Cmd+K から送られてくる
+clear_pane = "prefix+ctrl+k"
