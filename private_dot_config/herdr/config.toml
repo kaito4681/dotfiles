@@ -17,6 +17,10 @@ auto_switch = false
 [theme.custom]
 surface_dim = "#565f89" # サイドバーとペインの境界線
 
+[experimental]
+# prefix の後は英数入力に切り替え、日本語 IME のままでもコマンドが効くようにする
+switch_ascii_input_source_in_prefix = true
+
 [keys]
 detach = "prefix+d"
 # WezTerm の Cmd+K から送られてくる
